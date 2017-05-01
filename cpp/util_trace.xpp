@@ -1,0 +1,92 @@
+#ifndef __UTIL_TRACE_XPP__
+#define __UTIL_TRACE_XPP__
+
+#include "common.xpp"
+#include <stdarg.h>
+#include <time.h>
+
+namespace TRACE {
+
+enum _level
+{
+    _unknown = -1,
+    _error,
+    _warnning,
+    _information
+};
+
+static int _active = _information;
+
+template <class K, class V> struct _item { K key; V value; };
+template <class K, class V> const V &find(K key, const _item<K, V> *items, int size)
+{
+    _item<K, V> *item = const_cast<_item<K, V> *>(items);
+    for (int i = 0; i < size; ++i)
+    {
+        if (item++->key == key) break;
+    }
+    
+    return (--item)->value;
+}
+
+#define START_ITEMS(K, V) \
+            typedef K K_TYPE; \
+            typedef V V_TYPE; \
+            static const _item<K, V> items[] = {
+#define END_ITEMS };
+#define FIRST_ITEM(K, V) {K, V}
+#define NEXT_ITEM(K, V) ,{K, V}
+#define FIND_FUNC find<K_TYPE, V_TYPE>
+#define FIND_ITEM(K) FIND_FUNC(K, items, sizeof(items)/sizeof(items[0]))
+
+const char * getlevel(int level)
+{
+    START_ITEMS(int, const char*)
+        FIRST_ITEM(_information, "information")
+        NEXT_ITEM(_warnning, "warning")
+        NEXT_ITEM(_error, "error")
+        NEXT_ITEM(_unknown, "unknown")
+    END_ITEMS
+    
+    return FIND_ITEM(level);
+}
+
+const char * currenttimestamp()
+{
+static char buf[80] = "";
+    time_t now;
+    time(&now);
+    strftime(buf, sizeof buf, "%Y-%m-%d %H:%M:%S", localtime(&now));
+    
+    return buf;
+}
+
+void trace(int level, const char* format, ...)
+{
+    if (level > _active) return;
+
+    char buf[4096 + 1] = "";
+    sprintf(buf, "%s\t%s\t", currenttimestamp(), getlevel(level));
+    size_t len = strlen(buf);
+
+    va_list args;
+    va_start(args, format);
+    vsprintf_s(buf + len, sizeof buf - len - 1, format, args);
+    va_end(args);
+
+    printf("%s\n", buf);
+}
+
+void setlevel(int level) { _active = level; }
+};
+
+#define SETTRACELEVEL(X) TRACE::setlevel(TRACE::_##X)
+#define settracelevelwarn() SETTRACELEVEL(warnning)
+#define settracelevelinfo() SETTRACELEVEL(information)
+#define settracelevelerror() SETTRACELEVEL(error)
+
+#define traceinfo(X, ...) TRACE::trace(TRACE::_information, X, __VA_ARGS__)
+#define tracewarnning(X, ...) TRACE::trace(TRACE::_warnning, X, __VA_ARGS__)
+#define traceerror(X, ...) TRACE::trace(TRACE::_error, X, __VA_ARGS__)
+
+#endif

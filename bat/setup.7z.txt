@@ -1,0 +1,4 @@
+﻿;!@Install@!UTF-8!
+Title="ProAgent Installer V1.0"
+RunProgram="install.bat"
+;!@InstallEnd@!

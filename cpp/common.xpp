@@ -1,0 +1,80 @@
+#ifndef __COMMON_XPP__
+#define __COMMON_XPP__
+
+#include <string>
+#include <vector>
+#include <fstream>
+#include <algorithm>
+
+#define _FEIXUE_BEGIN namespace feixue {
+#define _FEIXUE_END }
+
+_FEIXUE_BEGIN
+
+std::vector<std::string> readlines(const char* file)
+{
+    std::vector<std::string> lines;
+    std::ifstream ifs(file);
+    std::string line("");
+    while(ifs.good())
+    {
+        std::getline(ifs, line);
+        lines.push_back(line);
+    }
+    ifs.close();
+
+    return lines;
+}
+
+
+static std::vector<std::string> split(const char* raw, const char* delimiters = "\n")
+{
+    std::vector<std::string> target;
+
+    std::string source(raw);
+    std::string::size_type start = 0;
+    std::string::size_type stop = 0;
+
+    while((stop = source.find_first_of(delimiters, start)) != std::string::npos)
+    {
+        target.push_back(source.substr(start, stop - start));
+        start = stop + 1;
+    }
+
+    if (start < source.length()) target.push_back(source.substr(start));
+
+    return target;
+}
+
+template<class T, class P>
+class updator
+{
+    typedef void (*F)(T&, P);
+    T& target;
+    F func;
+public:
+    void operator()(P param) { func(target, param); }
+    updator(T& target, F func) : target(target), func(func) {}
+};
+
+template<class S, class T, class P>
+void update(const S& source, T& target, void(*FUNC)(T&, P))
+{
+    std::for_each(source.begin(), source.end(), updator<T, P>(target, FUNC));
+}
+
+template<class S, class T, class P>
+T update(const S& source, void(*FUNC)(T&, P))
+{
+    T target; update(source, target, FUNC); return target;
+}
+
+template<class S, class P>
+void visit(const S& source, void(*FUNC)(P))
+{
+    std::for_each(source.begin(), source.end(), FUNC);
+}
+
+_FEIXUE_END
+
+#endif

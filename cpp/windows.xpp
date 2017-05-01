@@ -1,0 +1,92 @@
+#ifndef __WINDOWS_XPP__
+#define __WINDOWS_XPP__
+
+#include "common.xpp"
+#include "util_trace.xpp"
+#include <windows.h>
+#include <string>
+#include <sys/types.h>
+#include <sys/stat.h>
+
+using namespace std;
+
+INT64 getfoldersize(const char* folder)
+{
+    INT64 size = 0;
+    
+    string search("");
+    search.append(folder).append("\\*");
+
+    WIN32_FIND_DATA data;
+    HANDLE handler = FindFirstFile(search.c_str(), &data);
+    if (INVALID_HANDLE_VALUE == handler)
+    {
+        tracewarnning("getfoldersize: Invalid handler, file path may not correct.");
+        return -1;
+    }
+
+    do
+    {            
+        if ((strcmp(data.cFileName, ".") == 0) || (strcmp(data.cFileName, "..") == 0))
+        {
+            continue;
+        }
+        string fullpath("");
+        fullpath.append(folder).append("\\").append(data.cFileName);
+
+        if (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) // sub folder
+        {
+            size += getfoldersize(fullpath.c_str());
+        }
+        else // file
+        {
+            size += ((INT64)data.nFileSizeHigh) << 32;
+            size += data.nFileSizeLow;
+        }
+
+    }while(FindNextFile(handler, &data));
+
+	FindClose(handler);
+
+    return size;  //in bytes
+}
+
+INT64 getfilesize(const char* file)
+{
+    struct __stat64 buf;
+    if (_stat64(file, &buf) != 0)
+    {
+        traceerror("getfilesize failed: %s", file);
+        return -1;
+    }
+
+    if (buf.st_mode & _S_IFDIR > 0) return getfoldersize(file);
+    
+    return buf.st_size;
+}
+
+VOID test_jobobject()
+{
+    HANDLE hJob = CreateJobObject(NULL, NULL);
+    if (NULL == hJob)
+    {
+        traceinfo("test_jobobject: failed to create job object, error = %d", GetLastError());
+    }
+    else
+    {
+        JOBOBJECT_EXTENDED_LIMIT_INFORMATION jobLimit = { 0 };
+        jobLimit.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_BREAKAWAY_OK | JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+        if (!SetInformationJobObject(hJob, JobObjectExtendedLimitInformation, &jobLimit, sizeof jobLimit))
+        {
+            traceinfo("test_jobobject: SetInformationJobObject failed, error = %d", GetLastError());
+        }
+        else
+        {
+            traceinfo("test_jobobject: OK");
+        }
+		
+		CloseHandle(hJob);
+    }
+}
+
+#endif
