@@ -7,13 +7,14 @@
 #include <string>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <tlhelp32.h>
 
 using namespace std;
 
 INT64 getfoldersize(const char* folder)
 {
     INT64 size = 0;
-    
+
     string search("");
     search.append(folder).append("\\*");
 
@@ -26,7 +27,7 @@ INT64 getfoldersize(const char* folder)
     }
 
     do
-    {            
+    {
         if ((strcmp(data.cFileName, ".") == 0) || (strcmp(data.cFileName, "..") == 0))
         {
             continue;
@@ -61,7 +62,7 @@ INT64 getfilesize(const char* file)
     }
 
     if (buf.st_mode & _S_IFDIR > 0) return getfoldersize(file);
-    
+
     return buf.st_size;
 }
 
@@ -84,9 +85,35 @@ VOID test_jobobject()
         {
             traceinfo("test_jobobject: OK");
         }
-		
-		CloseHandle(hJob);
+
+        CloseHandle(hJob);
     }
 }
+
+
+bool isProcessRunning(const char* image)
+{
+    bool running = false;
+
+    PROCESSENTRY32 entry;
+    entry.dwSize = sizeof(PROCESSENTRY32);
+
+    HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
+    if (Process32First(snapshot, &entry))
+    {
+        while (Process32Next(snapshot, &entry))
+        {
+            if (!_stricmp(entry.szExeFile, image))
+            {
+                running = true;
+                break;
+            }
+        }
+    }
+
+    CloseHandle(snapshot);
+    return running;
+}
+
 
 #endif
