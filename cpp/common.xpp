@@ -5,6 +5,9 @@
 #include <vector>
 #include <fstream>
 #include <algorithm>
+#include <functional>
+#include <locale>
+#include <cctype>
 
 #define _FEIXUE_BEGIN namespace feixue {
 #define _FEIXUE_END }
@@ -14,6 +17,7 @@ _FEIXUE_BEGIN
 std::vector<std::string> readlines(const char* file)
 {
     std::vector<std::string> lines;
+    std::locale deflocale = std::locale::global(std::locale(""));
     std::ifstream ifs(file);
     std::string line("");
     while(ifs.good())
@@ -22,10 +26,21 @@ std::vector<std::string> readlines(const char* file)
         lines.push_back(line);
     }
     ifs.close();
-
+    std::locale::global(deflocale);
     return lines;
 }
 
+static std::string trimspaces(const char* raw)
+{
+    std::string dest(raw ? raw : "");
+    dest.erase(dest.begin(), std::find_if(dest.begin(), dest.end(),
+            std::not1(std::ptr_fun<int, int>(std::isspace))));
+
+    dest.erase(std::find_if(dest.rbegin(), dest.rend(),
+            std::not1(std::ptr_fun<int, int>(std::isspace))).base(), dest.end());
+
+    return dest;
+}
 
 static std::vector<std::string> split(const char* raw, const char* delimiters = "\n")
 {

@@ -61,7 +61,7 @@ INT64 getfilesize(const char* file)
         return -1;
     }
 
-    if (buf.st_mode & _S_IFDIR > 0) return getfoldersize(file);
+    if ((buf.st_mode & _S_IFDIR) > 0) return getfoldersize(file);
 
     return buf.st_size;
 }
