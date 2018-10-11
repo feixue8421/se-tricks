@@ -90,7 +90,7 @@ class Regex(Rule):
     """
     def __init__(self, rule):
         super(self.__class__, self).__init__(rule)
-        self._rule = re.compile(rule)
+        self._rule = re.compile(self._rule)
 
     def search(self, content):
         self._result = self._rule.search(content)
@@ -121,4 +121,25 @@ class Fixed(Rule):
         if start >= len(content): return False
 
         self._result = content[start : end]
-        return True
+        return True if len(self._result) > 0 else False
+
+class RuleChain:
+    def __init__(self):
+        self._rules = []
+
+    def push(self, rule, forward):
+        self.rules.append((rule, forward))
+
+    def pop(self):
+        return self._rules.pop() if len(self._rules) > 0 else None
+
+    def process(self, content):
+        latestrule = None
+        latestforward = None
+        for rule, foward in self._rules:
+            if latestrule != None:
+                content = latestforward.forward()
+            if rule.search()
+
+
+        return None
