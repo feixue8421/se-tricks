@@ -1,0 +1,7 @@
+{
+    "source": "D:\\working\\OMCI\\omci_dual_stack\\LT.TRACE.session.log.raw",
+    "destination": "",
+    "prefix": "omci send ont id ng2:1/1/1 hex ",
+    "match": ["Action :       AR Create", "Action :       AR Set"],
+    "filter": []
+}

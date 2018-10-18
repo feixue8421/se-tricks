@@ -96,9 +96,6 @@ class Regex(Rule):
         self._result = self._rule.search(content)
         return True if self._result else False
 
-    def result(self, id):
-        return self._result.group(id)
-
 class Fixed(Rule):
     """
     Retrive text using fixed position(index).
@@ -110,7 +107,7 @@ class Fixed(Rule):
     """
     def __init__(self, rule):
         super(self.__class__, self).__init__(rule)
-        self._rule = Param.parse(rule)
+        self._rule = Param.parse(self._rule)
 
     def search(self, content):
         start = Param.get(self._rule, 'start', 0)
@@ -123,6 +120,25 @@ class Fixed(Rule):
         self._result = content[start : end]
         return True if len(self._result) > 0 else False
 
+class Forward:
+    def __init__(self, rule):
+        self._rule = rule
+
+    def search(self, content):
+        return self._rule.search(content)
+
+    def result(self):
+        return self._rule.result()
+
+class ForwardRegexGroup(Forward):
+    def __init__(self, rule, idx):
+        super(self.__class__, self).__init__(rule)
+        self._idx = idx
+
+    def result(self):
+        return self._rule.result().group(self._idx)
+
+"""
 class RuleChain:
     def __init__(self):
         self._rules = []
@@ -143,3 +159,6 @@ class RuleChain:
 
 
         return None
+"""
+
+
