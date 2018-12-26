@@ -68,6 +68,10 @@ class Rule(object):
 def match(contents, rules):
     return [content for content in contents if Rule.match(content, rules)]
 
+def first(contents, rules):
+    results = match(contents, rules)
+    return results[0] if len(results) > 0 else None
+
 def filter(contents, filters):
     return [content for content in contents if not filters or not Rule.match(content, filters)]
 
@@ -93,8 +97,16 @@ class Regex(Rule):
         self._rule = re.compile(self._rule)
 
     def search(self, content):
+        if not content:
+            return False
+
         self._result = self._rule.search(content)
         return True if self._result else False
+
+    def searchgroup(self, content, index = 0):
+        if not self.search(content):
+            return None
+        return self.result().group(index) if self.result() else None
 
 class Fixed(Rule):
     """
