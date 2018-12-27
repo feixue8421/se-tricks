@@ -1,0 +1,12 @@
+// {type:class}
+// {direction:topDown}
+[note: You can stick notes on diagrams too!{bg:cornsilk}]
+[Customer]<>1-orders 0..*>[Order{bg:red}]
+[Order]++*-*>[LineItem]
+[Order]-1>[DeliveryMethod]
+[Order]*-*>[Product|EAN_Code|promo_price()]
+[Category]<->[Product]
+[DeliveryMethod]^[National]
+[DeliveryMethod]^[International]
+[Order]-billing >[Address]
+[Order]-shipping >[Address]
