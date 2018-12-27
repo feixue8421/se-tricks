@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 #
 # Copyright 2016 feixue
 #
@@ -14,15 +14,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-"""using pyinstaller to make "py" to windows image"""
+"""configures shared among python modules"""
 
 import sys
-import subprocess
-
-pymodule = r'D:\Repository\se-tricks\python\pythonssh.py'
-pyinstaller = r'C:\Users\yongwu\AppData\Local\Programs\Python\Python37-32\Scripts\pyinstaller.exe'
-addbinarry = r'D:\Repository\se-tricks\python'
-
-subprocess.run([pyinstaller, '-F', pymodule, '-p', addbinarry], stdout=sys.stdout)
-
-print("process {} done!!!".format(__file__))
+import re
+from datetime import datetime
