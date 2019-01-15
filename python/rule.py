@@ -106,7 +106,7 @@ class Regex(Rule):
     def searchgroup(self, content, index = 0):
         if not self.search(content):
             return None
-        return self.result().group(index) if self.result() else None
+        return self.result().group(index)
 
 class Fixed(Rule):
     """
@@ -131,46 +131,3 @@ class Fixed(Rule):
 
         self._result = content[start : end]
         return True if len(self._result) > 0 else False
-
-class Forward:
-    def __init__(self, rule):
-        self._rule = rule
-
-    def search(self, content):
-        return self._rule.search(content)
-
-    def result(self):
-        return self._rule.result()
-
-class ForwardRegexGroup(Forward):
-    def __init__(self, rule, idx):
-        super(self.__class__, self).__init__(rule)
-        self._idx = idx
-
-    def result(self):
-        return self._rule.result().group(self._idx)
-
-"""
-class RuleChain:
-    def __init__(self):
-        self._rules = []
-
-    def push(self, rule, forward):
-        self.rules.append((rule, forward))
-
-    def pop(self):
-        return self._rules.pop() if len(self._rules) > 0 else None
-
-    def process(self, content):
-        latestrule = None
-        latestforward = None
-        for rule, foward in self._rules:
-            if latestrule != None:
-                content = latestforward.forward()
-            if rule.search()
-
-
-        return None
-"""
-
-

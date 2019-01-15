@@ -64,7 +64,7 @@ def fetchoutput():
         outputs = output.split('\n')
         last = None if output.endswith('\n') else -1
         [results.put(output) for output in outputs[:last]]
-        output = '' if output.endswith('\n') else outputs[-1]
+        output = '' if not last else outputs[-1]
 
         if output.endswith('$'):
             results.put(dummyoutput)
@@ -85,10 +85,10 @@ executeandecho('')
 executeandecho('/bin/bash')
 executeandecho('cdglob')
 executeandecho('')
-hglogs = executecmd('hg log -l 10 -b .')
+hglogs = executecmd('hg parents')
 
 prefix = 'glob.' \
-    + rule.Regex('[0-9.]+').searchgroup(rule.first(hglogs, [rule.Regex('^summary.*isr[0-9.]+')])) \
+    + rule.Regex('[0-9.]+').searchgroup(rule.first(hglogs, [rule.Regex('^summary.*isr[0-9.]+')]) or ['isr 00.000']) \
     + '.' \
     + rule.Regex('\d{4}').searchgroup(rule.first(hglogs, [rule.Regex('changeset.*\d{4}')]))
 
