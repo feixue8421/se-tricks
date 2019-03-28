@@ -19,7 +19,7 @@
 import sys
 import subprocess
 
-pymodule = r'D:\Repository\se-tricks\python\pythonssh.py'
+pymodule = r'D:\Repository\se-tricks\python\sshsynchronizer.py'
 pyinstaller = r'C:\Users\yongwu\AppData\Local\Programs\Python\Python37-32\Scripts\pyinstaller.exe'
 addbinarry = r'D:\Repository\se-tricks\python'
 

@@ -27,10 +27,10 @@ import sys
 serverip = "135.251.206.205"
 serverport = 22
 sshuser = 'yongwu'
-sshpassword = 'Work201809'
+sshpassword = 'Work1903'
 archive = '/home/yongwu/project.zip'
-fciv = r'D:\Tools\fciv.exe'
-targetfolder = r'D:\Repository/'
+fciv = r'c:\Tools\fciv.exe'
+targetfolder = r'c:\Repository/'
 
 dummyoutput = '--dummy output, since there is no actual output currently--'
 
@@ -90,7 +90,7 @@ hglogs = executecmd('hg parents')
 prefix = 'glob.' \
     + rule.Regex('[0-9.]+').searchgroup(rule.first(hglogs, [rule.Regex('^summary.*isr[0-9.]+')]) or ['isr 00.000']) \
     + '.' \
-    + rule.Regex('\d{4}').searchgroup(rule.first(hglogs, [rule.Regex('changeset.*\d{4}')]))
+    + rule.Regex('changeset:[ ]+(\d+)').searchgroup(rule.first(hglogs, [rule.Regex('changeset.*\d+')]), 1)
 
 print(f'ready to archive {prefix} ...')
 executeandecho('')

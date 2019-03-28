@@ -14,7 +14,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-"""using python ssh to upload/download files to/from linux server"""
+"""counting....."""
 
 import paramiko
 import time
@@ -25,30 +25,20 @@ import subprocess
 import sys
 import os
 
-serverip = "135.251.206.205"
-serverport = 22
-sshuser = 'yongwu'
-sshpassword = 'Work1903'
-localupload = r'c:\Repository\upload'
-localdownload = r'c:\Repository\download'
-remoteupload = r'/home/yongwu/upload'
-remotedownload = r'/home/yongwu/download'
+left = """
 
-transport = paramiko.Transport((serverip, serverport))
-transport.connect(username = sshuser, password = sshpassword)
-time.sleep(1)
+"""
 
-sftp = paramiko.SFTPClient.from_transport(transport)
 
-# download from server
-sftp.chdir(remotedownload)
-list(map(lambda file: (sftp.get(file, os.path.join(localdownload, file)), sftp.remove(file)) , sftp.listdir()))
+right = """
 
-# upload to server
-sftp.chdir(remoteupload)
-list(map(lambda file: (sftp.put(os.path.join(localupload, file), file), os.remove(os.path.join(localupload, file))), os.listdir(localupload)))
+"""
 
-transport.close()
+content = [item.strip() for item in content.replace('\n', ',').split(',') if item.strip()]
+content = dict(zip(content, (content.count(item) for item in content)))
+content = sorted(content.items(), key = lambda kv: kv[1], reverse = True)
+list(map(lambda item: print(f'ONT {item[0]} == {item[1]}', end = ', '), content))
+
 print('------------------------------------------------------------------------------')
 print("-process {} done!!!-".format(__file__))
 print('------------------------------------------------------------------------------')
