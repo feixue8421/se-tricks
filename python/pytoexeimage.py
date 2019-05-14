@@ -19,9 +19,9 @@
 import sys
 import subprocess
 
-pymodule = r'D:\Repository\se-tricks\python\sshsynchronizer.py'
-pyinstaller = r'C:\Users\yongwu\AppData\Local\Programs\Python\Python37-32\Scripts\pyinstaller.exe'
-addbinarry = r'D:\Repository\se-tricks\python'
+pymodule = r'C:\Repository\se-tricks\python\pythonssh.py'
+pyinstaller = r'C:\Users\y6wu\AppData\Local\Programs\Python\Python37\Scripts\pyinstaller.exe'
+addbinarry = r'C:\Repository\se-tricks\python'
 
 subprocess.run([pyinstaller, '-F', pymodule, '-p', addbinarry], stdout=sys.stdout)
 

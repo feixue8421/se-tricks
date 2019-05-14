@@ -36,7 +36,7 @@ class Param(object):
 
     @staticmethod
     def get(params, param, value):
-        if params.has_key(param):
+        if param in params:
             temp = params[param]
             if isinstance(value, int):
                 value = int(temp)
@@ -123,7 +123,7 @@ class Fixed(Rule):
 
     def search(self, content):
         start = Param.get(self._rule, 'start', 0)
-        end = Param.get(self._rule, 'end', None)
+        end = Param.get(self._rule, 'end', -1)
         count = Param.get(self._rule, 'count', 0)
         if count > 0: end = start + count
         # return False if the "start" is not valid

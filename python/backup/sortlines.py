@@ -1,85 +1,60 @@
+import os
+import sys
+sys.path.insert(1, r'c:\repository\se-tricks\python')
+
+import rule
+
 content = '''
-		xmlDataField.put("productRegistNo", "CPDJH");
-		xmlDataField.put("productName", "CPMC");
-		xmlDataField.put("vendor", "PPCH");
-		xmlDataField.put("systemVersion", "XTBBH");
-		xmlDataField.put("fingerReader", "ZWCJQMC");
-		xmlDataField.put("fingerReaderType", "ZWCJQXH");
-		xmlDataField.put("fingerReaderId", "ZWCJQID");
-		xmlDataField.put("ipAddress", "IPDZ");
-		xmlDataField.put("location", "BSDD");
-		xmlDataField.put("acceptUnitCode", "GAJGDM");
-		xmlDataField.put("acceptUnitName", "GAJGMC");
-		xmlDataField.put("applicant", "SBRXM");
-		xmlDataField.put("dataOwnerCode", "SJGSDWDM");
-		xmlDataField.put("dataOwnerName", "SJGSDWMC");
-		xmlDataField.put("acceptUnitAddress", "SLDW_DZMC");
-		xmlDataField.put("acceptUnitAddressJS", "JSSLDW_DZMC");
-		xmlDataField.put("acceptUnitCodeJS", "JSSLDW_GAJGDM");
-		xmlDataField.put("acceptUnitName", "SLDW_GAJGMC");
-		xmlDataField.put("acceptUnitNameJS", "JSSLDW_GAJGMC");
-		xmlDataField.put("acceptUnitPhoneNo", "SLDW_LXDH");
-		xmlDataField.put("acceptUnitPhoneNoJS", "JSSLDW_LXDH");
-		xmlDataField.put("applyReason", "JMSFZSLYYDM");
-		xmlDataField.put("birthday", "CSRQ");
-		xmlDataField.put("code", "@code");
-		xmlDataField.put("commissionCharge", "ZZJE");
-		xmlDataField.put("delivery", "JMSFZLZFSDM");
-		xmlDataField.put("deliveryAddress", "YJDZ");
-		xmlDataField.put("faultCode", "GZDM");
-		xmlDataField.put("faultDescription", "GZMS");
-		xmlDataField.put("flowNo", "JS_YWLSH");
-		xmlDataField.put("fp1Code", "ZWY_ZWDM");
-		xmlDataField.put("fp1CodeReturned", "CYJMSFZQK_ZWY_ZWDM");
-		xmlDataField.put("fp1FeatureData", "ZWY_ZWTZSJ");
-		xmlDataField.put("fp1FeatureDataReturned", "CYJMSFZQK_ZWY_ZWTZSJ");
-		xmlDataField.put("fp1ImageData", "ZWY_ZWTXSJ");
-		xmlDataField.put("fp1ImageQuality", "ZWY_ZWTXZLZ");
-		xmlDataField.put("fp1Result", "ZWY_ZWZCJGDM");
-		xmlDataField.put("fp1ResultReturned", "CYJMSFZQK_ZWY_ZWZCJGDM");
-		xmlDataField.put("fp2Code", "ZWE_ZWDM");
-		xmlDataField.put("fp2CodeReturned", "CYJMSFZQK_ZWE_ZWDM");
-		xmlDataField.put("fp2FeatureData", "ZWE_ZWTZSJ");
-		xmlDataField.put("fp2FeatureDataReturned", "CYJMSFZQK_ZWE_ZWTZSJ");
-		xmlDataField.put("fp2ImageData", "ZWE_ZWTXSJ");
-		xmlDataField.put("fp2ImageQuality", "ZWE_ZWTXZLZ");
-		xmlDataField.put("fp2Result", "ZWE_ZWZCJGDM");
-		xmlDataField.put("fp2ResultReturned", "CYJMSFZQK_ZWE_ZWZCJGDM");
-		xmlDataField.put("fpCollectResult", "ZWCJJGDM");
-		xmlDataField.put("fpCollectResultResult", "CYJMSFZQK_ZWCJJGDM");
-		xmlDataField.put("fpValidation", "ZWBDJGBS");
-		xmlDataField.put("fpValidationFingers", "BDZWZW");
-		xmlDataField.put("fpValidationImages", "BDZWTX");
-		xmlDataField.put("giveupReason", "BLQYY");
-		xmlDataField.put("hjAddress", "HJDZ_QHNXXDZ");
-		xmlDataField.put("hjCity", "HJDZ_SSXQ");
-		xmlDataField.put("hjCityCode", "HJDZ_SSXQDM");
-		xmlDataField.put("hjDataOwerCode", "HJDZ_SJGSDWDM");
-		xmlDataField.put("hjDataOwerName", "HJDZ_SJGSDWMC");
-		xmlDataField.put("id", "GMSFHM");
-		xmlDataField.put("issuer", "QFJG_GAJGMC");
-		xmlDataField.put("legalityExpireDate", "YXQJZRQ");
-		xmlDataField.put("legalityStartDate", "YXQQSRQ");
-		xmlDataField.put("lostFlag", "JMSFZ_JSZLBS");
-		xmlDataField.put("msg", "@msg");
-		xmlDataField.put("name", "XM");
-		xmlDataField.put("nationality", "MZDM");
-		xmlDataField.put("no", "NO");
-		xmlDataField.put("phoneNo", "LXDH");
-		xmlDataField.put("photo", "XP");
-		xmlDataField.put("proposerSig", "SQRQM");
-		xmlDataField.put("registDate", "DJSJ");
-		xmlDataField.put("reportLostType", "GSLX");
-		xmlDataField.put("scenePhoto", "XCXP");
-		xmlDataField.put("sex", "XBDM");
-		xmlDataField.put("unusualFinger", "SZYCZKDM");
-		xmlDataField.put("xzzAddress", "XZZ_QHNXXDZ");
-		xmlDataField.put("xzzCityCode", "XZZ_SSXQDM");
-		xmlDataField.put("zipCode", "YJBM");
+[LTP (PRNT) 10/05/19 12:38:30.282665 ]H1:a793  8 0 +00000:02:08:21:330:121 ActivePon: PONLOS evaluation, set_alarm to 0
+[LTP (PRNT) 10/05/19 12:38:31.862595 ]H1:a7fa  8 0 +00000:02:08:21:508:103 ActivePon: PONLOS evaluation, set_alarm to 0
+[LTP (PRNT) 10/05/19 12:36:45.825280 ]H1:0877  8 0 +00000:02:08:26:793:867 ActivePon: PONLOS evaluation, set_alarm to 0
+[LTP (PRNT) 10/05/19 12:37:13.740193 ]H1:0eff  8 0 +00000:02:08:27:434:558 ActivePon: PONLOS evaluation, set_alarm to 0
+[LTP (PRNT) 10/05/19 12:37:14.289509 ]H1:0f20  8 0 +00000:02:08:27:450:244 ActivePon: PONLOS evaluation, set_alarm to 1
+[LTP (PRNT) 10/05/19 12:37:21.214411 ]H1:10c3  8 0 +00000:02:08:27:626:173 ActivePon: PONLOS evaluation, set_alarm to 1
+[LTP (PRNT) 10/05/19 12:37:43.159902 ]H1:15e8  8 0 +00000:02:09:06:828:480 StandbyPon: PONLOS evaluation, clear_alarm 0
+[LTP (PRNT) 10/05/19 12:37:50.640157 ]H1:17aa  8 0 +00000:02:09:06:948:264 StandbyPon: PONLOS evaluation, clear_alarm 0
+[LTP (PRNT) 10/05/19 12:35:05.099028 ]H1:17d2  8 0 +00000:02:09:06:957:970 StandbyPon: PONLOS evaluation, clear_alarm 0
+[LTP (PRNT) 10/05/19 12:35:05.750173 ]H1:17f9  8 0 +00000:02:09:07:079:344 StandbyPon: PONLOS evaluation, clear_alarm 0
+[LTP (PRNT) 10/05/19 12:35:16.140792 ]H1:1a70  8 0 +00000:02:09:07:477:248 StandbyPon: PONLOS evaluation, clear_alarm 0
+[LTP (PRNT) 10/05/19 12:35:05.784269 ]H1:17fa  8 0 +00000:02:09:07:079:346 CLR alm PON_LOS
+[LTP (PRNT) 10/05/19 12:35:06.503876 ]H1:1824  8 0 +00000:02:09:07:088:218 CLR alm PON_LOS
+[LTP (PRNT) 10/05/19 12:35:07.671142 ]H1:186f  8 0 +00000:02:09:07:108:220 CLR alm PON_LOS
+[LTP (PRNT) 10/05/19 12:35:08.972821 ]H1:18be  8 0 +00000:02:09:07:197:285 CLR alm PON_LOS
+[LTP (PRNT) 10/05/19 12:35:12.471144 ]H1:1995  8 0 +00000:02:09:07:298:409 CLR alm PON_LOS
+[LTP (PRNT) 10/05/19 12:35:13.739777 ]H1:19e1  8 0 +00000:02:09:07:428:406 CLR alm PON_LOS
+[LTP (PRNT) 10/05/19 12:35:14.393896 ]H1:1a0b  8 0 +00000:02:09:07:457:862 CLR alm PON_LOS
+[LTP (PRNT) 10/05/19 12:37:14.289623 ]H1:0f21  8 0 +00000:02:08:27:450:246 SET alm PON_LOS
+[LTP (PRNT) 10/05/19 12:37:43.160015 ]H1:15e9  8 0 +00000:02:09:06:828:482 CLR alm PON_LOS
+[LTP (PRNT) 10/05/19 12:37:44.364562 ]H1:1634  8 0 +00000:02:09:06:848:730 CLR alm PON_LOS
+[LTP (PRNT) 10/05/19 12:37:45.665951 ]H1:167f  8 0 +00000:02:09:06:868:190 CLR alm PON_LOS
+[LTP (PRNT) 10/05/19 12:37:46.900211 ]H1:16ca  8 0 +00000:02:09:06:888:267 CLR alm PON_LOS
+[LTP (PRNT) 10/05/19 12:37:48.134623 ]H1:1715  8 0 +00000:02:09:06:908:296 CLR alm PON_LOS
+[LTP (PRNT) 10/05/19 12:37:49.338011 ]H1:1760  8 0 +00000:02:09:06:928:304 CLR alm PON_LOS
+[LTP (PRNT) 10/05/19 12:37:50.640396 ]H1:17ab  8 0 +00000:02:09:06:948:266 CLR alm PON_LOS
+[LTP (PRNT) 10/05/19 12:48:30.507935 ]H1:8b50  8 0 +00000:02:04:24:746:916 CLR alm PON_LOS
+[LTP (PRNT) 10/05/19 12:48:31.637369 ]H1:8b93  8 0 +00000:02:04:24:765:891 CLR alm PON_LOS
+[LTP (PRNT) 10/05/19 12:48:32.599459 ]H1:8bcc  8 0 +00000:02:04:24:786:026 CLR alm PON_LOS
+[LTP (PRNT) 10/05/19 12:48:33.182442 ]H1:8bf2  8 0 +00000:02:04:24:800:035 CLR alm PON_LOS
+[LTP (PRNT) 10/05/19 12:48:34.280210 ]H1:8c35  8 0 +00000:02:04:24:832:314 CLR alm PON_LOS
+[LTP (PRNT) 10/05/19 12:48:35.103020 ]H1:8c64  8 0 +00000:02:04:24:837:681 CLR alm PON_LOS
+[LTP (PRNT) 10/05/19 12:48:44.086248 ]H1:8e76  8 0 +00000:02:04:51:374:485 CLR alm PON_LOS
+[LTP (PRNT) 10/05/19 12:48:45.258839 ]H1:8ec2  8 0 +00000:02:04:51:502:616 CLR alm PON_LOS
+[LTP (PRNT) 10/05/19 12:48:46.013462 ]H1:8eed  8 0 +00000:02:04:51:622:853 CLR alm PON_LOS
+[LTP (PRNT) 10/05/19 12:48:46.734357 ]H1:8f17  8 0 +00000:02:04:51:633:012 CLR alm PON_LOS
+[LTP (PRNT) 10/05/19 12:48:48.003387 ]H1:8f64  8 0 +00000:02:04:51:652:943 CLR alm PON_LOS
+[LTP (PRNT) 10/05/19 12:48:52.223130 ]H1:905f  8 0 +00000:02:04:51:833:163 CLR alm PON_LOS
+[LTP (PRNT) 10/05/19 12:48:53.524222 ]H1:90ab  8 0 +00000:02:04:51:863:828 CLR alm PON_LOS
+[LTP (PRNT) 10/05/19 12:48:54.793546 ]H1:90f6  8 0 +00000:02:04:51:873:396 CLR alm PON_LOS
+[LTP (PRNT) 10/05/19 12:48:56.608694 ]H1:9162  8 0 +00000:02:04:52:013:204 CLR alm PON_LOS
+[LTP (PRNT) 10/05/19 12:48:57.775081 ]H1:91ae  8 0 +00000:02:04:52:194:733 CLR alm PON_LOS
 '''
 
-lines = content.split("\n")
-lines.sort()
+_timerule = rule.Fixed(r"start=59 end=75")
 
+lines = content.split("\n")
+lines.sort(key = lambda line: _timerule.result() if _timerule.search(line) else '')
+
+#print('\n'.join(content.split("\n").sort(key = lambda line: _timerule.result() if _timerule.search(line) else None)))
 print('\n'.join(lines))
 print("done!!!")
+
