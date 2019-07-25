@@ -25,7 +25,7 @@ import subprocess
 import sys
 import os
 
-serverip = "135.251.206.205"
+serverip = "172.24.213.197"
 serverport = 22
 sshuser = 'yongwu'
 sshpassword = 'Work1903'
