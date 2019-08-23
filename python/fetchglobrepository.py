@@ -27,7 +27,7 @@ import sys
 serverip = "172.24.213.197"
 serverport = 22
 sshuser = 'yongwu'
-sshpassword = 'Work1903'
+sshpassword = 'Bell1908@'
 archive = '/home/yongwu/project.zip'
 fciv = r'c:\Tools\fciv.exe'
 targetfolder = r'c:\Repository/'

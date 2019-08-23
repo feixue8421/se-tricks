@@ -28,7 +28,7 @@ import os
 serverip = "172.24.213.197"
 serverport = 22
 sshuser = 'yongwu'
-sshpassword = 'Work1903'
+sshpassword = 'Bell1908@'
 localupload = r'c:\Repository\upload'
 localdownload = r'c:\Repository\download'
 remoteupload = r'/home/yongwu/upload'
