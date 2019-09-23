@@ -69,8 +69,16 @@ def match(contents, rules):
     return [content for content in contents if Rule.match(content, rules)]
 
 def first(contents, rules):
+    return index(contents, rules, 0)
+
+def last(contents, rules):
+    return index(contents, rules, -1)
+
+def index(contents, rules, index):
     results = match(contents, rules)
-    return results[0] if len(results) > 0 else None
+    count = len(results)
+    if count < 1: return None
+    return results[(index + count) % count]
 
 def filter(contents, filters):
     return [content for content in contents if not filters or not Rule.match(content, filters)]

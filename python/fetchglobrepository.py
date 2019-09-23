@@ -28,6 +28,7 @@ serverip = "172.24.213.197"
 serverport = 22
 sshuser = 'yongwu'
 sshpassword = 'Bell1908@'
+swversion = '62.075'
 archive = '/home/yongwu/project.zip'
 fciv = r'c:\Tools\fciv.exe'
 targetfolder = r'c:\Repository/'
@@ -85,12 +86,11 @@ executeandecho('')
 executeandecho('/bin/bash')
 executeandecho('cdglob')
 executeandecho('')
-hglogs = executecmd('hg parents')
+hglogs = executecmd('showchangesets isr' + swversion)
 
 prefix = 'glob.' \
-    + rule.Regex('[0-9.]+').searchgroup(rule.first(hglogs, [rule.Regex('^summary.*isr[0-9.]+')]) or ['isr 00.000']) \
-    + '.' \
-    + rule.Regex('changeset:[ ]+(\d+)').searchgroup(rule.first(hglogs, [rule.Regex('changeset.*\d+')]), 1)
+    + rule.Regex('changeset:[ ]+(\d+)').searchgroup(rule.last(hglogs, [rule.Regex('changeset.*\d+')]), 1) \
+    + '.isr' + swversion
 
 print(f'ready to archive {prefix} ...')
 executeandecho('')
