@@ -32,9 +32,7 @@ alias echooamip='echo oamip:${oamip}'
 
 alias buildlog='tail -f ${swbuildlog}'
 
-alias ntoam='octopus STDIO ${oamip}:udp:23'
 alias tftpoam='tftp ${oamip}'
-alias clioam='telnet ${oamip}'
 alias ltshell='ssh -oPort=5022 -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null root@${oamip}'
 
 alias cdsw='cd ${sw}'
@@ -59,15 +57,30 @@ function pushdinalias() {
     eval pushd `alias $1 | awk -F= '{print $2}' | awk '{print $2}' | sed "s/'$//"`
 }
 
-function silentclioam() {
+function clioam() {
     export expscript=~/.cliexpect
     export clipwd="      "
     [ -z "$1" ] || export clipwd=$1
     echo "#!/usr/bin/expect" > ${expscript}
     echo set timeout 30 >> ${expscript}
-    echo spawn ssh -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null -l isadmin ${oamip} >> ${expscript}
+    # another way to login is using "telnet ${oamip}"
+    echo spawn ssh -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null -l isadmin ${oamip} >> ${expscript} 
     echo expect \"*assword:\" >> ${expscript}
     echo "send \"${clipwd}\\r\"" >> ${expscript}
+    echo interact >> ${expscript}
+    expect -f ${expscript}
+}
+
+function ntoam() {
+    export expscript=~/.ntexpect
+    echo "#!/usr/bin/expect" > ${expscript}
+    echo set timeout 30 >> ${expscript}
+    echo spawn octopus STDIO ${oamip}:udp:23 >> ${expscript} 
+    echo "send \"\\r\\r\"" >> ${expscript}
+    echo expect \"*ogin:\" >> ${expscript}
+    echo "send \"shell\\r\"" >> ${expscript}
+    echo expect \"*assword:\" >> ${expscript}
+    echo "send \"nt\\r\"" >> ${expscript}
     echo interact >> ${expscript}
     expect -f ${expscript}
 }
@@ -76,7 +89,7 @@ function setboard() {
     echo before update...
     echoboard
     echoglob
-
+    
     export board=$1
     export globcore=`grep FPGA_ARCH_${board} ${sw}/vobs/dsl/sw/flat/GponGlob/Makefile | awk -F= '{print $2}' | sed 's/^\s*//'`
     export globbin=`grep TARGET_${board} ${sw}/vobs/dsl/sw/flat/GponGlob/Makefile | awk -F= '{print $2}' | sed 's/^\s*//' | sed 's/\$.*/\-METH\.bin/'`
@@ -84,21 +97,21 @@ function setboard() {
     echo after update...
     echoboard
     echoglob
-
+    
     echo update done
 }
 
 function showchangesets() {
     pushd ${sw}
-    echo sw changeset:
+    echo sw changeset: 
     hg log -r "ancestor($1)"
 
-    echo glob changeset:
+    echo glob changeset: 
     hg cat vobs/dsl/sw/flat/BUILDCFG/extRepo/GponGlob_glob.cfg -r "ancestor($1)"
 
     revision=`hg cat vobs/dsl/sw/flat/BUILDCFG/extRepo/GponGlob_glob.cfg -r "ancestor($1)" | grep REVISION | awk -F= '{print $2}'`
     popd
-
+    
     pushd ${glob}
     hg log -r ${revision}
     popd
@@ -107,12 +120,12 @@ function showchangesets() {
 function swmake() {
     pushdinalias cdbuild
     nohup make IVY=ivy $1 VERS=${bldversion} -j24 > ~/board.make.log 2>&1 &
-    popd
+    popd 
 }
 
 function globmake() {
     updateglobbldinfo
-    pushdinalias cdglobbld
+    pushdinalias cdglobbld 
     make MEDIUM=ETH
     popd
 }
@@ -121,14 +134,14 @@ function makeall() {
     echo build glob
     globmake
     echo build glob finished
-
+    
     echo glob bin update
     cpglobbin
 
     echo build sw
     swmake M=GponGlob
 
-    buildlog --pid=$!
+    buildlog --pid=$! 
 }
 
 PS1='`pwd` \$'
