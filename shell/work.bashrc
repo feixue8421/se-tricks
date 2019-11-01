@@ -21,7 +21,8 @@ export swbuildlog=~/board.make.log
 
 # User specific aliases and functions
 alias ll='ls -lh'
-alias lvnc='start_vnc 1920x1080'
+alias startvnc='start_vnc 1920x1080'
+alias stopvnc="vncserver -list | grep '^:' | awk '{print $1}' | xargs -r vncserver -kill"
 alias findbyname='find ./ -name'
 alias agrep='alias | grep'
 alias hgrep='history | grep'
@@ -48,6 +49,10 @@ alias hgarchive='rm ~/project.zip ; hg archive ~/project.zip -X ".hg*"'
 alias swgrep='grep --include=\*.{c,h,cc,cpp,hh,hpp} -rn ${sw} -e'
 alias swgrepheader='grep --include=\*.{h,hh,hpp} -rn ${sw} -e'
 alias swgrepimplementation='grep --include=\*.{c,cc,cpp} -rn ${sw} -e'
+
+alias globgrep='grep --include=\*.{c,h,cc,cpp,hh,hpp} -rn ${glob} -e'
+alias globgrepheader='grep --include=\*.{h,hh,hpp} -rn ${glob} -e'
+alias globgrepimplementation='grep --include=\*.{c,cc,cpp} -rn ${glob} -e'
 
 PATH=$PATH:$HOME/.local/bin:$HOME/bin:/ap/local/Linux_x86_64/shell
 
