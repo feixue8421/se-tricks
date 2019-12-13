@@ -27,6 +27,7 @@ alias findbyname='find ./ -name'
 alias agrep='alias | grep'
 alias hgrep='history | grep'
 alias lgrep='ll | grep'
+alias pwdgrep='grep -rn . -e'
 alias echoglob='echo glob:${glob} globcore:${globcore} globbin:${globbin}'
 alias echoboard='echo sw:${sw} board:${board} bldversion:${bldversion}'
 alias echooamip='echo oamip:${oamip}'
@@ -46,17 +47,23 @@ alias updateglobbldinfo='find ${glob} -name build_info.o -exec rm -f {} \;'
 
 alias hgarchive='rm ~/project.zip ; hg archive ~/project.zip -X ".hg*"'
 
-alias swgrep='grep --include=\*.{c,h,cc,cpp,hh,hpp} -rn ${sw} -e'
-alias swgrepheader='grep --include=\*.{h,hh,hpp} -rn ${sw} -e'
-alias swgrepimplementation='grep --include=\*.{c,cc,cpp} -rn ${sw} -e'
+alias swgrep='grep -i --include=\*.{c,h,cc,cpp,hh,hpp} -rn ${sw} -e'
+alias swgrepheader='grep -i --include=\*.{h,hh,hpp} -rn ${sw} -e'
+alias swgrepimplementation='grep -i --include=\*.{c,cc,cpp} -rn ${sw} -e'
 
-alias globgrep='grep --include=\*.{c,h,cc,cpp,hh,hpp} -rn ${glob} -e'
-alias globgrepheader='grep --include=\*.{h,hh,hpp} -rn ${glob} -e'
-alias globgrepimplementation='grep --include=\*.{c,cc,cpp} -rn ${glob} -e'
+alias globgrep='grep -i --include=\*.{c,h,cc,cpp,hh,hpp} -rn ${glob} -e'
+alias globgrepheader='grep -i --include=\*.{h,hh,hpp} -rn ${glob} -e'
+alias globgrepimplementation='grep -i --include=\*.{c,cc,cpp} -rn ${glob} -e'
 
 PATH=$PATH:$HOME/.local/bin:$HOME/bin:/ap/local/Linux_x86_64/shell
 
 export PATH
+
+function hgbackup() {
+    dates=`date "+%Y%m%d%H%M%S"`
+    versions=`hg parents --template "{basename(reporoot)}.{short(node)}"`
+    hg diff -b > ~/diffs/${versions}.${dates}.diff
+}
 
 function pushdinalias() {
     eval pushd `alias $1 | awk -F= '{print $2}' | awk '{print $2}' | sed "s/'$//"`
@@ -124,7 +131,7 @@ function showchangesets() {
 
 function swmake() {
     pushdinalias cdbuild
-    nohup make IVY=ivy $1 VERS=${bldversion} -j24 > ~/board.make.log 2>&1 &
+    nohup docker-make IVY=ivy BUILDROOT_CACHE_ENABLE=1 $1 VERS=${bldversion} -j24 >${swbuildlog} 2>&1 &
     popd 
 }
 
@@ -148,6 +155,9 @@ function makeall() {
 
     buildlog --pid=$! 
 }
+
+# libs needed for FWLT-C
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/gpongem/lib/:/home/yongwu/lib/
 
 PS1='`pwd` \$'
 
