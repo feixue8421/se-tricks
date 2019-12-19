@@ -10,10 +10,10 @@ fi
 
 # project relates exports
 export glob=/repo/yongwu/glob
-export globcore=martini
-export globbin=gltd4a-METH.bin
+export globcore=brugal/fwlt-c
+export globbin=uglob
 export sw=/repo/yongwu/sw
-export board=fglt-b
+export board=fwlt-c
 export oamip=10.9.69.237
 export bldversion=000
 export swbuildlog=~/board.make.log
@@ -70,9 +70,9 @@ function pushdinalias() {
 }
 
 function clioam() {
-    export expscript=~/.cliexpect
-    export clipwd="      "
-    [ -z "$1" ] || export clipwd=$1
+    expscript=~/.cliexpect
+    clipwd="      "
+    [ -z "$1" ] || clipwd=$1
     echo "#!/usr/bin/expect" > ${expscript}
     echo set timeout 30 >> ${expscript}
     # another way to login is using "telnet ${oamip}"
@@ -84,7 +84,7 @@ function clioam() {
 }
 
 function ntoam() {
-    export expscript=~/.ntexpect
+    expscript=~/.ntexpect
     echo "#!/usr/bin/expect" > ${expscript}
     echo set timeout 30 >> ${expscript}
     echo spawn octopus STDIO ${oamip}:udp:23 >> ${expscript} 
@@ -131,29 +131,43 @@ function showchangesets() {
 
 function swmake() {
     pushdinalias cdbuild
-    nohup docker-make IVY=ivy BUILDROOT_CACHE_ENABLE=1 $1 VERS=${bldversion} -j24 >${swbuildlog} 2>&1 &
+    nohup docker-make IVY=ivy BUILDROOT_CACHE_ENABLE=1 $@ VERS=${bldversion} -j24 >${swbuildlog} 2>&1 &
     popd 
+
+    buildlog --pid=$! 
 }
 
 function globmake() {
     updateglobbldinfo
     pushdinalias cdglobbld 
-    make MEDIUM=ETH
+    if [ $# -eq 0 ]
+    then
+        make MEDIUM=ETH BUILDROOT_CACHE_ENABLE=1
+    else
+        make $@ BUILDROOT_CACHE_ENABLE=1
+    fi
     popd
 }
 
-function makeall() {
-    echo build glob
-    globmake
-    echo build glob finished
+function hgupdateglob() {
+    globcfg=${sw}/vobs/dsl/sw/flat/BUILDCFG/extRepo/GponGlob_glob.cfg
     
-    echo glob bin update
-    cpglobbin
+    echo before update...
+    cat ${globcfg} 
+    
+    echo "[GponGlob/glob]" > ${globcfg}
+    echo "REPO=glob" >> ${globcfg}
+    pushd ${glob}
+    echo `hg parents --template "REVISION={node}"` >> ${globcfg}
+    popd
+    echo "SUBDIR=glob" >> ${globcfg}
+    echo "HG_SERVER=/repo/yongwu" >> ${globcfg}
 
-    echo build sw
-    swmake M=GponGlob
+    echo after update...
+    cat ${globcfg}
 
-    buildlog --pid=$! 
+    echo sw/GponGlob/glob removed if exists
+    rm -rf ${sw}/src/GponGlob/glob
 }
 
 # libs needed for FWLT-C
