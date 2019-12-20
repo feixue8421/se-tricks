@@ -1,0 +1,8 @@
+// {type:sequence}
+// {generate:false}
+[:Computer]sendUnsentEmail>[:Server]
+[:Computer]newEmail>[:Server]
+[:Server]reponse.>[:Computer]
+[:Computer]downloadEmail>[:Server]
+[:Computer]deleteOldEmail>[:Server]
+[:Server]maintaining>[:Server]
