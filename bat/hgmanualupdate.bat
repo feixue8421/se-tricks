@@ -3,7 +3,12 @@ SETLOCAL
 
 REM hg manual update to avoid file collision on windows.
 
-ECHO Start manual update ...
+ECHO This command is deprecated and please use HGMANUALUPDATE.ps1 instead!
+GOTO :DONE
+
+hg pull
+
+ECHO Start manual update at %time%
 
 IF "%~1" == "" (
     SET rev=tip
@@ -11,11 +16,14 @@ IF "%~1" == "" (
     SET rev=%~1
 )
 
-hg pull
+ECHO update to %rev%
+
 hg debugsetparents %rev%
 hg debugrebuildstate
-hg revert -I **/*.h -I **/*.hh -I **/*.hpp -I **/*.c -I **/*.cc -I **/*.cpp -I **/makefile -I **/*.xml -I **/*.json
+hg revert --no-backup -I **/*.h -I **/*.hh -I **/*.hpp -I **/*.c -I **/*.cc -I **/*.cpp -I **/makefile -I **/*.xml -I **/*.json
 
-ECHO Finish manual update!!
+ECHO Finish manual update at %time% !!
+
+:DONE
 ENDLOCAL
 EXIT /B 0
