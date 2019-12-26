@@ -15,7 +15,7 @@ export globbin=uglob
 export sw=/repo/yongwu/sw
 export board=fwlt-c
 export oamip=10.9.69.237
-export bldversion=000
+export bldversion=800
 export swbuildlog=~/board.make.log
 
 
@@ -42,11 +42,6 @@ alias cdsw='cd ${sw}'
 alias cdbuild='cd ${sw}/build/${board}/OS'
 alias cdglob='cd $glob'
 alias cdglobbld='cd ${glob}/build/${globcore}/glob'
-
-alias cpglobbin='cp ${glob}/build/${globcore}/glob/${globbin} ${sw}/vobs/dsl/sw/flat/GponGlob/glob/build/${globcore}/glob/${globbin}'
-alias updateglobbldinfo='find ${glob} -name build_info.o -exec rm -f {} \;'
-
-alias hgarchive='rm ~/project.zip ; hg archive ~/project.zip -X ".hg*"'
 
 alias swgrep='grep -i --include=\*.{c,h,cc,cpp,hh,hpp} -rn ${sw} -e'
 alias swgrepheader='grep -i --include=\*.{h,hh,hpp} -rn ${sw} -e'
@@ -125,9 +120,7 @@ function showchangesets() {
     revision=`hg cat vobs/dsl/sw/flat/BUILDCFG/extRepo/GponGlob_glob.cfg -r "ancestor($1)" | grep REVISION | awk -F= '{print $2}'`
     popd
     
-    pushd ${glob}
-    hg log -r ${revision}
-    popd
+    hg log -r ${revision} --repository ${glob}
 }
 
 function swmake() {
@@ -139,14 +132,8 @@ function swmake() {
 }
 
 function globmake() {
-    updateglobbldinfo
     pushdinalias cdglobbld 
-    if [ $# -eq 0 ]
-    then
-        make MEDIUM=ETH BUILDROOT_CACHE_ENABLE=1
-    else
-        make $@ BUILDROOT_CACHE_ENABLE=1
-    fi
+    make $@
     popd
 }
 
@@ -158,9 +145,7 @@ function hgupdateglob() {
     
     echo "[GponGlob/glob]" > ${globcfg}
     echo "REPO=glob" >> ${globcfg}
-    pushd ${glob}
-    echo `hg parents --template "REVISION={node}"` >> ${globcfg}
-    popd
+    echo `hg parents --template "REVISION={node}" --repository ${glob}` >> ${globcfg}
     echo "SUBDIR=glob" >> ${globcfg}
     echo "HG_SERVER=/repo/yongwu" >> ${globcfg}
 
