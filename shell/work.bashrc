@@ -22,8 +22,8 @@ export swbuildlog=~/board.make.log
 # User specific aliases and functions
 alias ll='ls -lh'
 alias startvnc='start_vnc 1920x1080'
-alias stopvnc="vncserver -list | grep '^:' | awk '{print $1}' | xargs -r vncserver -kill"
-alias brcacheclear="pushd ${sw}/build/reborn && lgrep \"br-[0-9a-f]{24}\" | awk '{print $9}' | xargs -r -L 1 -p rm -rf && popd"
+alias stopvnc='vncserver -list | grep '\''^:'\'' | awk '\''{print $1}'\'' | xargs -r vncserver -kill'
+alias brcacheclean='pushd ${sw}/build/reborn && ll | egrep "br-[0-9a-f]{24}" | sort -rd | sed 1d | awk '\''{print $9}'\'' | xargs -r -L 1 rm -rf && popd'
 alias findbyname='find ./ -name'
 alias agrep='alias | grep'
 alias hgrep='history | grep'
