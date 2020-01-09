@@ -22,7 +22,7 @@ export swbuildlog=~/board.make.log
 # User specific aliases and functions
 alias ll='ls -lh'
 alias startvnc='start_vnc 1920x1080'
-alias stopvnc='vncserver -list | grep '\''^:'\'' | awk '\''{print $1}'\'' | xargs -r vncserver -kill'
+alias stopvnc='vncserver -list | grep '\''^:'\'' | awk '\''{print $1}'\'' | xargs -r -L 1 vncserver -kill'
 alias brcacheclean='pushd ${sw}/build/reborn && ll | egrep "br-[0-9a-f]{24}" | sort -rd | sed 1d | awk '\''{print $9}'\'' | xargs -r -L 1 rm -rf && popd'
 alias findbyname='find ./ -name'
 alias agrep='alias | grep'
@@ -32,6 +32,7 @@ alias pwdgrep='grep -rn . -e'
 alias echoglob='echo glob:${glob} globcore:${globcore} globbin:${globbin}'
 alias echoboard='echo sw:${sw} board:${board} bldversion:${bldversion}'
 alias echooamip='echo oamip:${oamip}'
+alias shrefresh='source ~/.bashrc'
 
 alias buildlog='tail -f ${swbuildlog}'
 
