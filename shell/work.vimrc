@@ -386,7 +386,10 @@ endfunction
 
 " customized key-maps 
 imap <leader>n <Esc>
-map <leader>q <Esc>:q!<cr>
+map <leader>q <Esc>:bd<cr>
 map <leader><cr> :
+map <F3> :execute "vimgrep /" . expand("<cword>") . "/j **" <Bar> cw<CR>
 
+" set tags to glob tags
+set tags=~/glob.ctags
 

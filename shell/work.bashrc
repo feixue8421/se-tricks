@@ -9,21 +9,28 @@ fi
 # export SYSTEMD_PAGER=
 
 # project relates exports
+export bbhistory=~/sw.bb.history
+
+function versionupdate() {
+    export bldversion=`head -n 1 ${bbhistory} | awk -F= '{printf "%03d", ++$2 % 1000}'`
+}
+
 export glob=/repo/yongwu/glob
 export globcore=brugal/fwlt-c
 export globbin=uglob
 export sw=/repo/yongwu/sw
 export board=fwlt-c
 export oamip=10.9.69.237
-export bldversion=800
 export swbuildlog=~/board.make.log
 
+# update bld version
+versionupdate
 
 # User specific aliases and functions
 alias ll='ls -lh'
 alias startvnc='start_vnc 1920x1080'
 alias stopvnc='vncserver -list | grep '\''^:'\'' | awk '\''{print $1}'\'' | xargs -r -L 1 vncserver -kill'
-alias brcacheclean='pushd ${sw}/build/reborn && ll | egrep "br-[0-9a-f]{24}" | sort -rd | sed 1d | awk '\''{print $9}'\'' | xargs -r -L 1 rm -rf && popd'
+alias brcacheclean='pushd ${sw}/build/reborn && ll | egrep "br-[0-9a-f]{24}" | sort -rd | sed "1,2d" | awk '\''{print $9}'\'' | xargs -r -L 1 rm -rf && popd'
 alias findbyname='find ./ -name'
 alias agrep='alias | grep'
 alias hgrep='history | grep'
@@ -33,6 +40,7 @@ alias echoglob='echo glob:${glob} globcore:${globcore} globbin:${globbin}'
 alias echoboard='echo sw:${sw} board:${board} bldversion:${bldversion}'
 alias echooamip='echo oamip:${oamip}'
 alias shrefresh='source ~/.bashrc'
+alias shscreen='screen -r `screen -ls | grep Detached | awk '\''{print $1}'\''`'
 
 alias buildlog='tail -f ${swbuildlog}'
 
@@ -41,8 +49,10 @@ alias ltshell='ssh -oPort=5022 -oStrictHostKeyChecking=no -oUserKnownHostsFile=/
 
 alias cdsw='cd ${sw}'
 alias cdbuild='cd ${sw}/build/${board}/OS'
+alias cdbuildme='cd /repo/yongwu/buildme'
 alias cdglob='cd $glob'
 alias cdglobbld='cd ${glob}/build/${globcore}/glob'
+alias ctagsglob='ctags -f ~/glob.ctags --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++ -R $glob'
 
 alias swgrep='grep -i --include=\*.{c,h,cc,cpp,hh,hpp} -rn ${sw} -e'
 alias swgrepheader='grep -i --include=\*.{h,hh,hpp} -rn ${sw} -e'
@@ -55,6 +65,7 @@ alias globgrepimplementation='grep -i --include=\*.{c,cc,cpp} -rn ${glob} -e'
 PATH=$PATH:$HOME/.local/bin:$HOME/bin:/ap/local/Linux_x86_64/shell
 
 export PATH
+
 
 function hgbackup() {
     dates=`date "+%Y%m%d%H%M%S"`
@@ -155,6 +166,20 @@ function hgupdateglob() {
 
     echo sw/GponGlob/glob removed if exists
     rm -rf ${sw}/src/GponGlob/glob
+}
+
+function recordbb() {
+    sed -i "1s/[0-9]\+/${bldversion}/g" ${bbhistory}
+
+    echo -e "\n---------------------------------------\n" >> ${bbhistory}
+    echo "bldversion:" ${bldversion} >> ${bbhistory}
+    echo "sw changeset:" >> ${bbhistory}
+    hg parents --repository ${sw} >> ${bbhistory}
+    echo "changes:" >> ${bbhistory}
+    hg diff -b --repository ${sw} >> ${bbhistory}
+    echo -e "\n---------------------------------------\n" >> ${bbhistory}
+
+    versionupdate
 }
 
 # libs needed for FWLT-C
