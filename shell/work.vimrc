@@ -384,11 +384,18 @@ function! VisualSelection(direction, extra_filter) range
     let @" = l:saved_reg
 endfunction
 
+" customized commands
+command! GlobGrep execute 'silent !globgrep ' . expand("<cword>") | copen 33
+
 " customized key-maps 
 imap <leader>n <Esc>
 map <leader>q <Esc>:bd<cr>
 map <leader><cr> :
 map <F3> :execute "vimgrep /" . expand("<cword>") . "/j **" <Bar> cw<CR>
+map <F4> :tag 
+map <F5> :!ls -l 
+map <F6> :GlobGrep<CR> 
+
 
 " set tags to glob tags
 set tags=~/glob.ctags

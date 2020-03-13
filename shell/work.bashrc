@@ -45,7 +45,6 @@ alias shscreen='screen -r `screen -ls | grep Detached | awk '\''{print $1}'\''`'
 alias buildlog='tail -f ${swbuildlog}'
 
 alias tftpoam='tftp ${oamip}'
-alias ltshell='ssh -oPort=5022 -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null root@${oamip}'
 
 alias cdsw='cd ${sw}'
 alias cdbuild='cd ${sw}/build/${board}/OS'
@@ -53,6 +52,7 @@ alias cdbuildme='cd /repo/yongwu/buildme'
 alias cdglob='cd $glob'
 alias cdglobbld='cd ${glob}/build/${globcore}/glob'
 alias ctagsglob='ctags -f ~/glob.ctags --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++ -R $glob'
+alias viglob='pushd $glob && vi OS/gltdMain.c && popd'
 
 alias swgrep='grep -i --include=\*.{c,h,cc,cpp,hh,hpp} -rn ${sw} -e'
 alias swgrepheader='grep -i --include=\*.{h,hh,hpp} -rn ${sw} -e'
@@ -66,6 +66,43 @@ PATH=$PATH:$HOME/.local/bin:$HOME/bin:/ap/local/Linux_x86_64/shell
 
 export PATH
 
+function ltshell() {
+    ltip=127.0.17.${1:2:2}
+    port="5022"
+    [ -z "$2" ] || port=$2
+    
+    expscript=~/.ltshell.expect
+    echo "#!/usr/bin/expect" > ${expscript}
+    echo set timeout 30 >> ${expscript}
+    echo spawn octopus STDIO ${oamip}:udp:23 >> ${expscript} 
+    echo "send \"\\r\\r\"" >> ${expscript}
+    echo expect \"*ogin:\" >> ${expscript}
+    echo "send \"shell\\r\"" >> ${expscript}
+    echo expect \"*assword:\" >> ${expscript}
+    echo "send \"nt\\r\"" >> ${expscript}
+    echo expect \"]\>\" >> ${expscript}
+    echo "send \"eqpt displayasam -s\\r\"" >> ${expscript}
+    echo expect \"]\>\" >> ${expscript}
+    echo "send \"natp del_tcp ${port}\\r\"" >> ${expscript}
+    echo expect \"]\>\" >> ${expscript}
+    echo "send \"natp add_tcp ${port} ${ltip} 22\\r\"" >> ${expscript}
+    echo expect \"]\>\" >> ${expscript}
+    echo exit >> ${expscript}
+    expect -f ${expscript}
+
+    sleep 5
+    echo " "
+    echo "connect to lt $1 with $port"
+    
+    echo "#!/usr/bin/expect" > ${expscript}
+    echo set timeout 30 >> ${expscript}
+    echo spawn ssh -oPort=${port} -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null root@${oamip} >> ${expscript}
+    echo "send \"\\r\\r\"" >> ${expscript}
+    echo expect \"*assword:\" >> ${expscript}
+    echo "send \"2x2=4\\r\"" >> ${expscript}
+    echo interact >> ${expscript}
+    expect -f ${expscript}   
+}
 
 function hgbackup() {
     dates=`date "+%Y%m%d%H%M%S"`
@@ -78,7 +115,7 @@ function pushdinalias() {
 }
 
 function clioam() {
-    expscript=~/.cliexpect
+    expscript=~/.cli.expect
     clipwd="      "
     [ -z "$1" ] || clipwd=$1
     echo "#!/usr/bin/expect" > ${expscript}
@@ -92,7 +129,7 @@ function clioam() {
 }
 
 function ntoam() {
-    expscript=~/.ntexpect
+    expscript=~/.ntoam.expect
     echo "#!/usr/bin/expect" > ${expscript}
     echo set timeout 30 >> ${expscript}
     echo spawn octopus STDIO ${oamip}:udp:23 >> ${expscript} 
@@ -101,6 +138,30 @@ function ntoam() {
     echo "send \"shell\\r\"" >> ${expscript}
     echo expect \"*assword:\" >> ${expscript}
     echo "send \"nt\\r\"" >> ${expscript}
+    echo expect \"]\>\" >> ${expscript}
+    echo "send \"eqpt displayasam -s\\r\"" >> ${expscript}
+    echo expect \"]\>\" >> ${expscript}
+    echo interact >> ${expscript}
+    expect -f ${expscript}
+}
+
+function ltoam() {
+    expscript=~/.ltoam.expect
+    echo "#!/usr/bin/expect" > ${expscript}
+    echo set timeout 30 >> ${expscript}
+    echo spawn octopus STDIO ${oamip}:udp:23 >> ${expscript} 
+    echo "send \"\\r\\r\"" >> ${expscript}
+    echo expect \"*ogin:\" >> ${expscript}
+    echo "send \"shell\\r\"" >> ${expscript}
+    echo expect \"*assword:\" >> ${expscript}
+    echo "send \"nt\\r\"" >> ${expscript}
+    echo expect \"]\>\" >> ${expscript}
+    echo "send \"eqpt displayasam -s\\r\"" >> ${expscript}
+    echo expect \"]\>\" >> ${expscript}
+    echo "send \"rcom exec -b $1 -c login kill 0\\r\"" >> ${expscript}
+    echo expect \"]\>\" >> ${expscript}
+    echo "send \"login board $1\\r\"" >> ${expscript}
+    echo expect \"]\>\" >> ${expscript}
     echo interact >> ${expscript}
     expect -f ${expscript}
 }
