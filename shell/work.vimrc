@@ -312,7 +312,7 @@ map <leader>q <Esc>:bd<cr>
 map <leader><cr> :
 " map <F3> :execute "vimgrep /" . expand("<cword>") . "/j **" <Bar> cw<CR>
 map <F3> <Esc>,x:% !grep -i --include=\*.{c,cc,cpp,h,hh,hpp} -rn ${glob} -e 
-map <F4> :tag 
+map <F4> [I:let nr = input("choose: ")<Bar>exe "normal " . nr ."[\t"<CR>
 map <F5> :!ls -l 
 map <F6> <Esc>0"qyt:f:l"wyt::e! +<C-R>w <C-R>q<cr>
 

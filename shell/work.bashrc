@@ -41,6 +41,8 @@ alias echoboard='echo sw:${sw} board:${board} bldversion:${bldversion}'
 alias echooamip='echo oamip:${oamip}'
 alias shrefresh='source ~/.bashrc'
 alias shscreen='screen -r `screen -ls | grep Detached | awk '\''{print $1}'\''`'
+alias topmyself='top -c -u `whoami`'
+alias psmyself='ps -ef | egrep `whoami`[[:space:]]+[[:digit:]]+'
 
 alias buildlog='tail -f ${swbuildlog}'
 
