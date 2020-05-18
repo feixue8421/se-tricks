@@ -1,11 +1,18 @@
 "hg manual update, used for windows, to skip case-foldings"
-"pull incomings from server"
-hg pull
 
-$target="tip"
-if ($args.count > 0)
+if (0 -lt $args.count)
 {
+	if (1 -lt $args.count)
+	{
+		"pull incomings from server $args[1]"
+		hg pull $args[1]
+	}
+	
     $target=$args[0]
+}
+else
+{
+	$target="tip"
 }
 
 $current=hg parents --template "{node}"

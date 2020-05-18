@@ -22,6 +22,7 @@ export sw=/repo/yongwu/sw
 export board=fwlt-c
 export oamip=10.9.69.237
 export swbuildlog=~/board.make.log
+export globcfg=vobs/dsl/sw/flat/BUILDCFG/extRepo/GponGlob_glob.cfg
 
 # update bld version
 versionupdate
@@ -53,8 +54,7 @@ alias cdbuild='cd ${sw}/build/${board}/OS'
 alias cdbuildme='cd /repo/yongwu/buildme'
 alias cdglob='cd $glob'
 alias cdglobbld='cd ${glob}/build/${globcore}/glob'
-alias ctagsglob='ctags -f ~/glob.ctags --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++ -R $glob'
-alias viglob='pushd $glob && vi OS/gltdMain.c && popd'
+alias viglob='ctagsglob && pushd $glob && vi OS/gltdMain.cpp && popd'
 
 alias swgrep='grep -i --include=\*.{c,h,cc,cpp,hh,hpp} -rn ${sw} -e'
 alias swgrepheader='grep -i --include=\*.{h,hh,hpp} -rn ${sw} -e'
@@ -185,14 +185,14 @@ function setboard() {
 }
 
 function showchangesets() {
-    pushd ${sw}
+    pushd $sw
     echo sw changeset: 
     hg log -r "ancestor($1)"
 
     echo glob changeset: 
-    hg cat vobs/dsl/sw/flat/BUILDCFG/extRepo/GponGlob_glob.cfg -r "ancestor($1)"
+    hg cat $globcfg -r "ancestor($1)"
 
-    revision=`hg cat vobs/dsl/sw/flat/BUILDCFG/extRepo/GponGlob_glob.cfg -r "ancestor($1)" | grep REVISION | awk -F= '{print $2}'`
+    revision=`hg cat $globcfg -r "ancestor($1)" | grep REVISION | awk -F= '{print $2}'`
     popd
     
     hg log -r ${revision} --repository ${glob}
@@ -213,19 +213,19 @@ function globmake() {
 }
 
 function hgupdateglob() {
-    globcfg=${sw}/vobs/dsl/sw/flat/BUILDCFG/extRepo/GponGlob_glob.cfg
+    swglobcfg=${sw}/$globcfg
     
     echo before update...
-    cat ${globcfg} 
+    cat ${swglobcfg} 
     
-    echo "[GponGlob/glob]" > ${globcfg}
-    echo "REPO=glob" >> ${globcfg}
-    echo `hg parents --template "REVISION={node}" --repository ${glob}` >> ${globcfg}
-    echo "SUBDIR=glob" >> ${globcfg}
-    echo "HG_SERVER=/repo/yongwu" >> ${globcfg}
+    echo "[GponGlob/glob]" > ${swglobcfg}
+    echo "REPO=glob" >> ${swglobcfg}
+    echo `hg parents --template "REVISION={node}" --repository ${glob}` >> ${swglobcfg}
+    echo "SUBDIR=glob" >> ${swglobcfg}
+    echo "HG_SERVER=/repo/yongwu" >> ${swglobcfg}
 
     echo after update...
-    cat ${globcfg}
+    cat ${swglobcfg}
 
     echo sw/GponGlob/glob removed if exists
     rm -rf ${sw}/src/GponGlob/glob
@@ -243,6 +243,18 @@ function recordbb() {
     echo -e "\n---------------------------------------\n" >> ${bbhistory}
 
     versionupdate
+}
+
+function ctagsglob() {
+    revision=`hg parents --template "{node}" --repository ${glob}`
+    globtag=~/.ctags/${revision}.ctags
+    if [ ! -f $globtag ]; then
+        ctags -f - --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++ -R $glob > $globtag
+    fi
+
+    pushd ~
+    ln -s -f $globtag glob.ctags
+    popd
 }
 
 # libs needed for FWLT-C

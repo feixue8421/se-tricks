@@ -85,12 +85,6 @@ set novisualbell
 set t_vb=
 set tm=500
 
-" Properly disable sound on errors on MacVim
-if has("gui_macvim")
-    autocmd GUIEnter * set vb t_vb=
-endif
-
-
 " Add a bit extra margin to the left
 set foldcolumn=1
 
@@ -155,9 +149,6 @@ set nu "Show line number
 vnoremap <silent> * :<C-u>call VisualSelection('', '')<CR>/<C-R>=@/<CR><CR>
 vnoremap <silent> # :<C-u>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
 
-" Disable highlight when <leader><cr> is pressed
-map <silent> <leader><cr> :noh<cr>
-
 " Smart way to move between windows
 map <C-j> <C-W>j
 map <C-k> <C-W>k
@@ -207,23 +198,17 @@ au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g
 set laststatus=2
 
 " Format the status line
-set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ %l\ \ Column:\ %c
+set statusline=\ %F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ %l\ \ Column:\ %c
 
 " Remap VIM 0 to first non-blank character
 map 0 ^
+map 9 $
 
 " Move a line of text using ALT+[jk] or Command+[jk] on mac
 nmap <M-j> mz:m+<cr>`z
 nmap <M-k> mz:m-2<cr>`z
 vmap <M-j> :m'>+<cr>`<my`>mzgv`yo`z
 vmap <M-k> :m'<-2<cr>`>my`<mzgv`yo`z
-
-if has("mac") || has("macunix")
-  nmap <D-j> <M-j>
-  nmap <D-k> <M-k>
-  vmap <D-j> <M-j>
-  vmap <D-k> <M-k>
-endif
 
 " Delete trailing white space on save, useful for some filetypes ;)
 fun! CleanExtraSpaces()
@@ -235,7 +220,7 @@ fun! CleanExtraSpaces()
 endfun
 
 if has("autocmd")
-    autocmd BufWritePre *.txt,*.js,*.py,*.wiki,*.sh,*.coffee :call CleanExtraSpaces()
+    autocmd BufWritePre *.txt,*.js,*.py,*.wiki,*.sh,*.coffee,*.h,*.hh,*.hpp,*.c,*.cc,*.cpp :call CleanExtraSpaces()
 endif
 
 " Pressing ,ss will toggle and untoggle spell checking
@@ -252,17 +237,6 @@ noremap <Leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
 
 " Quickly open a buffer for scribble
 map <leader>x :e! ~/.vi.buffer<cr>
-
-" Toggle paste mode on and off
-map <leader>pp :setlocal paste!<cr>
-
-" Returns true if paste mode is enabled
-function! HasPaste()
-    if &paste
-        return 'PASTE MODE  '
-    endif
-    return ''
-endfunction
 
 " Don't close window, when deleting a buffer
 command! Bclose call <SID>BufcloseCloseIt()
@@ -310,11 +284,10 @@ endfunction
 imap <leader>n <Esc>
 map <leader>q <Esc>:bd<cr>
 map <leader><cr> :
-" map <F3> :execute "vimgrep /" . expand("<cword>") . "/j **" <Bar> cw<CR>
 map <F3> <Esc>,x:% !grep -i --include=\*.{c,cc,cpp,h,hh,hpp} -rn ${glob} -e 
-map <F4> [I:let nr = input("choose: ")<Bar>exe "normal " . nr ."[\t"<CR>
+map <F4> yiw<F3><C-R>"<cr>
 map <F5> :!ls -l 
-map <F6> <Esc>0"qyt:f:l"wyt::e! +<C-R>w <C-R>q<cr>
+map <F6> [I:let nr = input("choose: ")<Bar>exe "normal " . nr ."[\t"<CR>
 
 
 " set tags to glob tags
