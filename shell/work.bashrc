@@ -23,6 +23,7 @@ export board=fwlt-c
 export oamip=10.9.69.237
 export swbuildlog=~/board.make.log
 export globcfg=vobs/dsl/sw/flat/BUILDCFG/extRepo/GponGlob_glob.cfg
+export buildserver=yongwu@172.24.213.197
 
 # update bld version
 versionupdate
@@ -44,6 +45,7 @@ alias shrefresh='source ~/.bashrc'
 alias shscreen='screen -r `screen -ls | grep Detached | awk '\''{print $1}'\''`'
 alias topmyself='top -c -u `whoami`'
 alias psmyself='ps -ef | egrep `whoami`[[:space:]]+[[:digit:]]+'
+alias sshbuildserver='ssh ${buildserver}'
 
 alias buildlog='tail -f ${swbuildlog}'
 
@@ -189,13 +191,20 @@ function showchangesets() {
     echo sw changeset: 
     hg log -r "ancestor($1)"
 
-    echo glob changeset: 
+    echo glob changeset in sw:
     hg cat $globcfg -r "ancestor($1)"
 
-    revision=`hg cat $globcfg -r "ancestor($1)" | grep REVISION | awk -F= '{print $2}'`
+    revision=`hg cat $globcfg -r "ancestor($1)" | grep ^REVISION | awk -F= '{print $2}'`
     popd
     
+    echo glob changeset:
     hg log -r ${revision} --repository ${glob}
+
+
+    if [ -n "$2" ]; then
+        hg tag -l -r "ancestor($1)" --repository=$sw $2
+        hg tag -l -r $revision --repository=$glob $2
+    fi
 }
 
 function swmake() {
@@ -255,6 +264,23 @@ function ctagsglob() {
     pushd ~
     ln -s -f $globtag glob.ctags
     popd
+}
+
+function updaterepository() {
+    sshbuildserver hg pull --repository=$sw
+    sshbuildserver hg pull --repository=$glob
+
+    hg pull --repository=$sw
+    hg pull --repository=$glob
+}
+
+function synchronizebuildserver() {
+    scp $buildserver:~/.bashrc /mnt/c/Repository/se-tricks/shell/work.bashrc
+    scp $buildserver:~/.vimrc /mnt/c/Repository/se-tricks/shell/work.vimrc
+    scp $buildserver:$sw/.hg/localtags $sw/.hg/localtags
+    scp $buildserver:$glob/.hg/localtags $glob/.hg/localtags
+
+    shrefresh
 }
 
 # libs needed for FWLT-C
