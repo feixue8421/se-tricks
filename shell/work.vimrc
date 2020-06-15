@@ -282,7 +282,7 @@ endfunction
 
 " customized key-maps 
 imap <leader>n <Esc>
-map <leader>q <Esc>:bd<cr>
+map <leader>q <Esc>:q<cr>
 map <leader><cr> :
 map <F3> <Esc>,x:% !grep -i --include=\*.{c,cc,cpp,h,hh,hpp} -rn ${glob} -e 
 map <F4> yiw<F3><C-R>"<cr>

@@ -46,6 +46,7 @@ alias shscreen='screen -r `screen -ls | grep Detached | awk '\''{print $1}'\''`'
 alias topmyself='top -c -u `whoami`'
 alias psmyself='ps -ef | egrep `whoami`[[:space:]]+[[:digit:]]+'
 alias sshbuildserver='ssh ${buildserver}'
+alias cpptaste='pushd ~/cpptaste && g++ -o main *.cpp && ./main && popd'
 
 alias buildlog='tail -f ${swbuildlog}'
 
@@ -56,6 +57,8 @@ alias cdbuild='cd ${sw}/build/${board}/OS'
 alias cdbuildme='cd /repo/yongwu/buildme'
 alias cdglob='cd $glob'
 alias cdglobbld='cd ${glob}/build/${globcore}/glob'
+alias ctagsglob='ctagsrepository $glob glob'
+alias ctagssw='ctagsrepository $sw sw'
 alias viglob='ctagsglob && pushd $glob && vi OS/gltdMain.cpp && popd'
 
 alias swgrep='grep -i --include=\*.{c,h,cc,cpp,hh,hpp} -rn ${sw} -e'
@@ -65,6 +68,7 @@ alias swgrepimplementation='grep -i --include=\*.{c,cc,cpp} -rn ${sw} -e'
 alias globgrep='grep -i --include=\*.{c,h,cc,cpp,hh,hpp} -rn ${glob} -e'
 alias globgrepheader='grep -i --include=\*.{h,hh,hpp} -rn ${glob} -e'
 alias globgrepimplementation='grep -i --include=\*.{c,cc,cpp} -rn ${glob} -e'
+alias globmakelinux='globmake E=LINUX'
 
 PATH=$PATH:$HOME/.local/bin:$HOME/bin:/ap/local/Linux_x86_64/shell
 
@@ -254,15 +258,16 @@ function recordbb() {
     versionupdate
 }
 
-function ctagsglob() {
-    revision=`hg parents --template "{node}" --repository ${glob}`
-    globtag=~/.ctags/${revision}.ctags
-    if [ ! -f $globtag ]; then
-        ctags -f - --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++ -R $glob > $globtag
+function ctagsrepository() {
+    revision=`hg parents --template "{node}" --repository $1`
+    revisiontag=~/.ctags/$2.${revision}.ctags
+    targettag=$2.ctags
+    if [ ! -f $revisiontag ]; then
+        ctags -f - --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++ -R $1 > $revisiontag
     fi
 
     pushd ~
-    ln -s -f $globtag glob.ctags
+    ln -s -f $revisiontag $targettag
     popd
 }
 
@@ -281,6 +286,14 @@ function synchronizebuildserver() {
     scp $buildserver:$glob/.hg/localtags $glob/.hg/localtags
 
     shrefresh
+}
+
+function where() {
+    if [ "yongwu" = `whoami` ]; then
+        echo ON BUILDSERVER
+    else
+        echo ON LOCAL
+    fi
 }
 
 # libs needed for FWLT-C
