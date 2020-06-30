@@ -42,16 +42,12 @@ alias echoglob='echo glob:${glob} globcore:${globcore} globbin:${globbin}'
 alias echoboard='echo sw:${sw} board:${board} bldversion:${bldversion}'
 alias echooamip='echo oamip:${oamip}'
 alias shrefresh='source ~/.bashrc'
-alias shscreen='screen -r `screen -ls | grep Detached | awk '\''{print $1}'\''`'
 alias topmyself='top -c -u `whoami`'
 alias psmyself='ps -ef | egrep `whoami`[[:space:]]+[[:digit:]]+'
+
 alias sshbuildserver='ssh ${buildserver}'
-alias cpptaste='pushd ~/cpptaste && g++ -o main *.cpp && ./main && popd'
-
 alias buildlog='tail -f ${swbuildlog}'
-
 alias tftpoam='tftp ${oamip}'
-
 alias cdsw='cd ${sw}'
 alias cdbuild='cd ${sw}/build/${board}/OS'
 alias cdbuildme='cd /repo/yongwu/buildme'
@@ -110,12 +106,6 @@ function ltshell() {
     echo "send \"2x2=4\\r\"" >> ${expscript}
     echo interact >> ${expscript}
     expect -f ${expscript}   
-}
-
-function hgbackup() {
-    dates=`date "+%Y%m%d%H%M%S"`
-    versions=`hg parents --template "{basename(reporoot)}.{short(node)}"`
-    hg diff -b > ~/diffs/${versions}.${dates}.diff
 }
 
 function pushdinalias() {
@@ -180,8 +170,8 @@ function setboard() {
     echoglob
     
     export board=$1
-    export globcore=`grep FPGA_ARCH_${board} ${sw}/vobs/dsl/sw/flat/GponGlob/Makefile | awk -F= '{print $2}' | sed 's/^\s*//'`
-    export globbin=`grep TARGET_${board} ${sw}/vobs/dsl/sw/flat/GponGlob/Makefile | awk -F= '{print $2}' | sed 's/^\s*//' | sed 's/\$.*/\-METH\.bin/'`
+    export globcore=`grep FPGA_ARCH_${board} ${sw}/vobs/dsl/sw/flat/GponGlob/module.mk | awk -F= '{print $2}' | sed 's/^\s*//'`
+    export globbin=`grep TARGET_${board} ${sw}/vobs/dsl/sw/flat/GponGlob/module.mk | awk -F= '{print $2}' | sed 's/^\s*//' | sed 's/\$.*/\-METH\.bin/'`
 
     echo after update...
     echoboard
@@ -193,12 +183,12 @@ function setboard() {
 function showchangesets() {
     pushd $sw
     echo sw changeset: 
-    hg log -r "ancestor($1)"
+    hg log -r $1
 
     echo glob changeset in sw:
-    hg cat $globcfg -r "ancestor($1)"
+    hg cat $globcfg -r $1
 
-    revision=`hg cat $globcfg -r "ancestor($1)" | grep ^REVISION | awk -F= '{print $2}'`
+    revision=`hg cat $globcfg -r $1 | grep ^REVISION | awk -F= '{print $2}'`
     popd
     
     echo glob changeset:
@@ -206,7 +196,7 @@ function showchangesets() {
 
 
     if [ -n "$2" ]; then
-        hg tag -l -r "ancestor($1)" --repository=$sw $2
+        hg tag -l -r $1 --repository=$sw $2
         hg tag -l -r $revision --repository=$glob $2
     fi
 }

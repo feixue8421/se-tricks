@@ -286,9 +286,8 @@ map <leader>q <Esc>:q<cr>
 map <leader><cr> :
 map <F3> <Esc>,x:% !grep -i --include=\*.{c,cc,cpp,h,hh,hpp} -rn ${glob} -e 
 map <F4> yiw<F3><C-R>"<cr>
-map <F5> :!ls -l 
+map <F5> :!make<CR> 
 map <F6> [I:let nr = input("choose: ")<Bar>exe "normal " . nr ."[\t"<CR>
-
 
 " set tags to glob tags
 set tags=~/glob.ctags
