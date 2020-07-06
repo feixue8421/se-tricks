@@ -11,8 +11,8 @@ CURPATHS = $(subst /,$(SPACE),$(subst $(SPACE),_,$(CURDIR)))
 TARGET = $(word $(words $(CURPATHS)),$(CURPATHS))
 
 SOURCES = $(wildcard *.cpp)
-OBJS = $(patsubst %.cpp, %.o, $(SOURCES))
-DEPS = $(patsubst %.cpp, %.d, $(SOURCES))
+OBJS = $(SOURCES:.cpp=.o)
+DEPS = $(SOURCES:.cpp=.d)
 
 .DEFAULT_GOAL := run
 
@@ -23,7 +23,7 @@ clean:
 	-rm -f $(OBJS) $(DEPS) $(TARGET)
 
 %.d: %.cpp
-	$(CC) -MM $(CFLAGS) $(INCLUDES) $< | sed 's/\($*\)\.o[ :]*/\1.o $@ : /g' > $@
+	$(CC) -MM $< | sed 's/\($*\)\.o[ :]*/\1.o $@ : /g' > $@
 
 -include $(DEPS)
 
