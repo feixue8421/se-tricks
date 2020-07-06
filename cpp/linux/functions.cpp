@@ -13,8 +13,8 @@ static TestRegister regist("functions", [](){
     Values& values = getValues();
 
     printdatas(values, "value: ", "");
-    printdatas(values, " ");
+    printdatas(values, "\t ");
     values.data()[0] = 100;
-    printdatas(values, " * ");
+    printdatas(values, "\t*");
 });
 

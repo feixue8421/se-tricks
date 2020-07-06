@@ -56,6 +56,7 @@ alias cdglobbld='cd ${glob}/build/${globcore}/glob'
 alias ctagsglob='ctagsrepository $glob glob'
 alias ctagssw='ctagsrepository $sw sw'
 alias viglob='ctagsglob && pushd $glob && vi OS/gltdMain.cpp && popd'
+alias vicpptaste='pushd ~/cpptaste && vi main.cpp && popd'
 
 alias swgrep='grep -i --include=\*.{c,h,cc,cpp,hh,hpp} -rn ${sw} -e'
 alias swgrepheader='grep -i --include=\*.{h,hh,hpp} -rn ${sw} -e'

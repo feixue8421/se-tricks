@@ -43,12 +43,18 @@ public:
 template<class Datas>
 void printdatas(Datas& datas, const std::string& prefix, const std::string& postfix)
 {
+    bool more = false;
     std::for_each(datas.begin(), datas.end(), [&](const typename Datas::value_type& value) {
-                std::cout << prefix << value << postfix;
-                if (postfix.empty())
+                if (more)
                 {
-                    std::cout << std::endl;
+                    std::cout << postfix;
+                    if (postfix.empty())
+                    {
+                        std::cout << std::endl;
+                    }
                 }
+                std::cout << prefix << value;
+                more = true;
             });
 
     std::cout << std::endl;

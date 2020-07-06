@@ -12,20 +12,26 @@ TARGET = $(word $(words $(CURPATHS)),$(CURPATHS))
 
 SOURCES = $(wildcard *.cpp)
 OBJS = $(patsubst %.cpp, %.o, $(SOURCES))
+DEPS = $(patsubst %.cpp, %.d, $(SOURCES))
 
 .DEFAULT_GOAL := run
 
-${TARGET}: ${OBJS}
-	${CC} ${CFLAGS} -o $@ ${OBJS} ${LIBS}
+$(TARGET): $(DEPS) $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LIBS)
 
 clean:
-	-rm -f ${OBJS} ${TARGET}
+	-rm -f $(OBJS) $(DEPS) $(TARGET)
+
+%.d: %.cpp
+	$(CC) -MM $(CFLAGS) $(INCLUDES) $< | sed 's/\($*\)\.o[ :]*/\1.o $@ : /g' > $@
+
+-include $(DEPS)
 
 .cpp.o:
 	${CC} ${CFLAGS} ${INCLUDES} -c $<
 
-run: ${TARGET}
-	./${TARGET}
+run: $(TARGET)
+	./$(TARGET)
 	@echo -----------------DONE-----------------
 	@read -n 1
 

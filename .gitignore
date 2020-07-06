@@ -91,3 +91,11 @@ ENV/
 
 # VS code settings
 .vscode
+
+# CPP files
+*.o
+*.d
+# following file is a target which is generated according to the parent directory automatically
+# see cpp/linux
+linux
+
