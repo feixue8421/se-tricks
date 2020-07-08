@@ -31,7 +31,8 @@ clean:
 	${CC} ${CFLAGS} ${INCLUDES} -c $<
 
 run: $(TARGET)
-	./$(TARGET)
-	@echo -----------------DONE-----------------
+	@echo -----------------BEGIN-----------------
+	@./$(TARGET)
+	@echo -----------------END-----------------
 	@read -n 1
 
