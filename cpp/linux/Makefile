@@ -5,10 +5,7 @@ CC = g++
 INCLUDES =
 LIBS = -lm
 
-EMPTY =
-SPACE = $(EMPTY) $(EMPTY)
-CURPATHS = $(subst /,$(SPACE),$(subst $(SPACE),_,$(CURDIR)))
-TARGET = $(word $(words $(CURPATHS)),$(CURPATHS))
+TARGET = target.run.out
 
 SOURCES = $(wildcard *.cpp)
 OBJS = $(SOURCES:.cpp=.o)
@@ -23,7 +20,7 @@ clean:
 	-rm -f $(OBJS) $(DEPS) $(TARGET)
 
 %.d: %.cpp
-	$(CC) -MM $< | sed 's/\($*\)\.o[ :]*/\1.o $@ : /g' > $@
+	$(CC) -MM $(CFLAGS) $< | sed 's/\($*\)\.o[ :]*/\1.o $@ : /g' > $@
 
 -include $(DEPS)
 

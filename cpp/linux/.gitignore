@@ -1,4 +1,5 @@
 # linux CPP complied files
 *.o
 *.d
-linux
+target.run.out
+

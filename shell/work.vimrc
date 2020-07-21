@@ -283,12 +283,27 @@ endfunction
 " customized key-maps 
 imap <leader>n <Esc>
 map <leader>q <Esc>:q<cr>
+map <leader>q <Esc>:qa!<cr>
 map <leader><cr> :
-map <F3> <Esc>,x:% !grep -i --include=\*.{c,cc,cpp,h,hh,hpp} -rn ${glob} -e 
-map <F4> yiw<F3><C-R>"<cr>
+map <F3> <Esc>,x:% !grep -rn . --include=\*.{c,cc,cpp,h,hh,hpp} -i -e 
+map <F4> yiw<F3><C-R>"<cr>:w<cr>
 map <F5> :!make<CR> 
 map <F6> [I:let nr = input("choose: ")<Bar>exe "normal " . nr ."[\t"<CR>
 
 " set tags to glob tags
 set tags=~/glob.ctags
+
+" set to interactive mode to use alias
+set shellcmdflag=-ic
+
+" netrw
+let g:netrw_banner = 0
+let g:netrw_liststyle = 3
+let g:netrw_browse_split = 4
+let g:netrw_altv = 1
+let g:netrw_winsize = 15
+augroup ProjectDrawer
+    autocmd!
+    autocmd VimEnter * :Vexplore
+augroup END
 

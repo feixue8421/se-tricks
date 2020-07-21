@@ -55,7 +55,7 @@ alias cdglob='cd $glob'
 alias cdglobbld='cd ${glob}/build/${globcore}/glob'
 alias ctagsglob='ctagsrepository $glob glob'
 alias ctagssw='ctagsrepository $sw sw'
-alias viglob='ctagsglob && pushd $glob && vi OS/gltdMain.cpp && popd'
+alias viglob='ctagsglob && pushd $glob && vi . && popd'
 alias vicpptaste='pushd ~/cpptaste && vi main.cpp && popd'
 
 alias swgrep='grep -i --include=\*.{c,h,cc,cpp,hh,hpp} -rn ${sw} -e'
@@ -271,10 +271,12 @@ function updaterepository() {
 }
 
 function synchronizebuildserver() {
-    scp $buildserver:~/.bashrc /mnt/c/Repository/se-tricks/shell/work.bashrc
-    scp $buildserver:~/.vimrc /mnt/c/Repository/se-tricks/shell/work.vimrc
-    scp $buildserver:$sw/.hg/localtags $sw/.hg/localtags
-    scp $buildserver:$glob/.hg/localtags $glob/.hg/localtags
+    cmd="rsync -rci --delete-after"
+    $cmd $buildserver:~/.bashrc /mnt/c/Repository/se-tricks/shell/work.bashrc
+    $cmd $buildserver:~/.vimrc /mnt/c/Repository/se-tricks/shell/work.vimrc
+    $cmd $buildserver:$sw/.hg/localtags $sw/.hg/localtags
+    $cmd $buildserver:$glob/.hg/localtags $glob/.hg/localtags
+    $cmd $buildserver:~/cpptaste/ /mnt/c/Repository/se-tricks/cpp/linux/
 
     shrefresh
 }
@@ -285,6 +287,17 @@ function where() {
     else
         echo ON LOCAL
     fi
+}
+
+function globprepush() {
+    pushdinalias cdglob
+    for ((idx=0;idx<10;idx++))
+    do
+        echo ---------------------------- $(($idx+1)) ----------------------------
+        build/pre_push.sh && echo **************** prepush succeeded!! **************** &&  break
+        sleep 5s
+    done
+    popd
 }
 
 # libs needed for FWLT-C

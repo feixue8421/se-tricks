@@ -1,5 +1,6 @@
 #include "header.h"
 #include <vector>
+#include <array>
 
 using Values = std::vector<int>;
 
@@ -16,5 +17,10 @@ static TestRegister regist("functions", [](){
     printdatas(values, "\t ");
     values.data()[0] = 100;
     printdatas(values, "\t*");
+
+    constexpr int size = 100;
+    std::array<int, size> numbers;
+    std::cout << numbers.size() << std::endl;
+    std::cout << numbers.data() << std::endl;
 });
 
