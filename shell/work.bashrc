@@ -20,7 +20,6 @@ export globcore=brugal/fwlt-c
 export globbin=uglob
 export sw=/repo/yongwu/sw
 export board=fwlt-c
-export oamip=10.9.69.237
 export swbuildlog=~/board.make.log
 export globcfg=vobs/dsl/sw/flat/BUILDCFG/extRepo/GponGlob_glob.cfg
 export buildserver=yongwu@172.24.213.197
@@ -44,6 +43,9 @@ alias echooamip='echo oamip:${oamip}'
 alias shrefresh='source ~/.bashrc'
 alias topmyself='top -c -u `whoami`'
 alias psmyself='ps -ef | egrep `whoami`[[:space:]]+[[:digit:]]+'
+alias oamipbmt='export oamip=135.251.214.211'
+alias oamiplab='export oamip=10.9.69.237'
+
 
 alias sshbuildserver='ssh ${buildserver}'
 alias buildlog='tail -f ${swbuildlog}'
@@ -57,6 +59,8 @@ alias ctagsglob='ctagsrepository $glob glob'
 alias ctagssw='ctagsrepository $sw sw'
 alias viglob='ctagsglob && pushd $glob && vi . && popd'
 alias vicpptaste='pushd ~/cpptaste && vi main.cpp && popd'
+alias swlog='hg log -b . --graph --repository=$sw'
+alias globlog='hg log -b . --graph --repository=$glob'
 
 alias swgrep='grep -i --include=\*.{c,h,cc,cpp,hh,hpp} -rn ${sw} -e'
 alias swgrepheader='grep -i --include=\*.{h,hh,hpp} -rn ${sw} -e'
@@ -70,6 +74,8 @@ alias globmakelinux='globmake E=LINUX'
 PATH=$PATH:$HOME/.local/bin:$HOME/bin:/ap/local/Linux_x86_64/shell
 
 export PATH
+
+oamiplab
 
 function ltshell() {
     ltip=127.0.17.${1:2:2}
@@ -298,6 +304,11 @@ function globprepush() {
         sleep 5s
     done
     popd
+}
+
+function bmtrepository() {
+    hg update --repository=$sw bmt_sw6203_typeb
+    hg update --repository=$glob bmt_glob6203_typeb
 }
 
 # libs needed for FWLT-C
