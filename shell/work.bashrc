@@ -10,11 +10,6 @@ fi
 
 # project relates exports
 export bbhistory=~/sw.bb.history
-
-function versionupdate() {
-    export bldversion=`head -n 1 ${bbhistory} | awk -F= '{printf "%03d", ++$2 % 1000}'`
-}
-
 export glob=/repo/yongwu/glob
 export globcore=brugal/fwlt-c
 export globbin=uglob
@@ -23,9 +18,8 @@ export board=fwlt-c
 export swbuildlog=~/board.make.log
 export globcfg=vobs/dsl/sw/flat/BUILDCFG/extRepo/GponGlob_glob.cfg
 export buildserver=yongwu@172.24.213.197
+export bldversion=017
 
-# update bld version
-versionupdate
 
 # User specific aliases and functions
 alias ll='ls -lh'
@@ -42,8 +36,7 @@ alias echoboard='echo sw:${sw} board:${board} bldversion:${bldversion}'
 alias echooamip='echo oamip:${oamip}'
 alias shrefresh='source ~/.bashrc'
 alias topmyself='top -c -u `whoami`'
-alias psmyself='ps -ef | egrep `whoami`[[:space:]]+[[:digit:]]+'
-alias oamipbmt='export oamip=135.251.214.211'
+alias oamipbmt='export oamip=135.251.192.162' #'135.251.214.211'
 alias oamiplab='export oamip=10.9.69.237'
 
 
@@ -52,23 +45,14 @@ alias buildlog='tail -f ${swbuildlog}'
 alias tftpoam='tftp ${oamip}'
 alias cdsw='cd ${sw}'
 alias cdbuild='cd ${sw}/build/${board}/OS'
-alias cdbuildme='cd /repo/yongwu/buildme'
 alias cdglob='cd $glob'
 alias cdglobbld='cd ${glob}/build/${globcore}/glob'
 alias ctagsglob='ctagsrepository $glob glob'
 alias ctagssw='ctagsrepository $sw sw'
 alias viglob='ctagsglob && pushd $glob && vi . && popd'
-alias vicpptaste='pushd ~/cpptaste && vi main.cpp && popd'
 alias swlog='hg log -b . --graph --repository=$sw'
 alias globlog='hg log -b . --graph --repository=$glob'
 
-alias swgrep='grep -i --include=\*.{c,h,cc,cpp,hh,hpp} -rn ${sw} -e'
-alias swgrepheader='grep -i --include=\*.{h,hh,hpp} -rn ${sw} -e'
-alias swgrepimplementation='grep -i --include=\*.{c,cc,cpp} -rn ${sw} -e'
-
-alias globgrep='grep -i --include=\*.{c,h,cc,cpp,hh,hpp} -rn ${glob} -e'
-alias globgrepheader='grep -i --include=\*.{h,hh,hpp} -rn ${glob} -e'
-alias globgrepimplementation='grep -i --include=\*.{c,cc,cpp} -rn ${glob} -e'
 alias globmakelinux='globmake E=LINUX'
 
 PATH=$PATH:$HOME/.local/bin:$HOME/bin:/ap/local/Linux_x86_64/shell
@@ -77,105 +61,95 @@ export PATH
 
 oamiplab
 
-function ltshell() {
-    ltip=127.0.17.${1:2:2}
-    port="5022"
-    [ -z "$2" ] || port=$2
-    
-    expscript=~/.ltshell.expect
-    echo "#!/usr/bin/expect" > ${expscript}
-    echo set timeout 30 >> ${expscript}
-    echo spawn octopus STDIO ${oamip}:udp:23 >> ${expscript} 
-    echo "send \"\\r\\r\"" >> ${expscript}
-    echo expect \"*ogin:\" >> ${expscript}
-    echo "send \"shell\\r\"" >> ${expscript}
-    echo expect \"*assword:\" >> ${expscript}
-    echo "send \"nt\\r\"" >> ${expscript}
-    echo expect \"]\>\" >> ${expscript}
-    echo "send \"eqpt displayasam -s\\r\"" >> ${expscript}
-    echo expect \"]\>\" >> ${expscript}
-    echo "send \"natp del_tcp ${port}\\r\"" >> ${expscript}
-    echo expect \"]\>\" >> ${expscript}
-    echo "send \"natp add_tcp ${port} ${ltip} 22\\r\"" >> ${expscript}
-    echo expect \"]\>\" >> ${expscript}
-    echo exit >> ${expscript}
-    expect -f ${expscript}
-
-    sleep 5
-    echo " "
-    echo "connect to lt $1 with $port"
-    
-    echo "#!/usr/bin/expect" > ${expscript}
-    echo set timeout 30 >> ${expscript}
-    echo spawn ssh -oPort=${port} -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null root@${oamip} >> ${expscript}
-    echo "send \"\\r\\r\"" >> ${expscript}
-    echo expect \"*assword:\" >> ${expscript}
-    echo "send \"2x2=4\\r\"" >> ${expscript}
-    echo interact >> ${expscript}
-    expect -f ${expscript}   
-}
-
 function pushdinalias() {
     eval pushd `alias $1 | awk -F= '{print $2}' | awk '{print $2}' | sed "s/'$//"`
 }
 
+function _baseexpect() {
+    echo '
+        set timeout 30;
+        spawn octopus STDIO ${oamip}:udp:23;
+        send "\r\r";
+        expect "*ogin:";
+        send "shell\r";
+        expect "*assword:";
+        send "nt\r";
+        expect "]\>";
+        send "eqpt displayasam -s\r";
+        expect "]\>";
+    '
+}
+
+# usage: sshexpect <user> <ip> <password> <port>
+function sshexpect() {
+    _port="22"
+    [ -z "$4" ] || _port=$4
+
+    expect -c "
+        set timeout 30
+        spawn ssh -oPort=${_port} -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null $1@$2
+        send \"\r\r\"
+        expect \"*assword:\"
+        send \"$3\r\"
+        interact
+    "
+}
+
+function ltshell() {
+    export expltip=127.0.17.$((16#${1:2:2}))
+    port="5022"
+    [ -z "$2" ] || port=$2
+    export expport=$port
+
+    export expmorecommand='
+        send "natp del_tcp ${expport}\r"
+        expect "]\>"
+        send "natp add_tcp ${expport} ${expltip} 22\r"
+        expect "]\>"
+        exit
+    '
+    expect -c "`(_baseexpect && echo $expmorecommand) | envsubst`"
+
+    sleep 5
+    echo " "
+    echo "connect to lt $1 with $port"
+
+    sshexpect root $oamip 2x2=4 $port
+}
+
 function clioam() {
-    expscript=~/.cli.expect
-    clipwd="      "
-    [ -z "$1" ] || clipwd=$1
-    echo "#!/usr/bin/expect" > ${expscript}
-    echo set timeout 30 >> ${expscript}
     # another way to login is using "telnet ${oamip}"
-    echo spawn ssh -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null -l isadmin ${oamip} >> ${expscript} 
-    echo expect \"*assword:\" >> ${expscript}
-    echo "send \"${clipwd}\\r\"" >> ${expscript}
-    echo interact >> ${expscript}
-    expect -f ${expscript}
+    expect -c "
+        set timeout 30
+        spawn ssh -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null -l isadmin ${oamip}
+        expect \"*assword:\"
+        send \"      \r\"
+        interact
+    "
 }
 
 function ntoam() {
-    expscript=~/.ntoam.expect
-    echo "#!/usr/bin/expect" > ${expscript}
-    echo set timeout 30 >> ${expscript}
-    echo spawn octopus STDIO ${oamip}:udp:23 >> ${expscript} 
-    echo "send \"\\r\\r\"" >> ${expscript}
-    echo expect \"*ogin:\" >> ${expscript}
-    echo "send \"shell\\r\"" >> ${expscript}
-    echo expect \"*assword:\" >> ${expscript}
-    echo "send \"nt\\r\"" >> ${expscript}
-    echo expect \"]\>\" >> ${expscript}
-    echo "send \"eqpt displayasam -s\\r\"" >> ${expscript}
-    echo expect \"]\>\" >> ${expscript}
-    echo interact >> ${expscript}
-    expect -f ${expscript}
+    expect -c "`(_baseexpect && echo 'interact;') | envsubst`"
 }
 
 function ltoam() {
-    expscript=~/.ltoam.expect
-    echo "#!/usr/bin/expect" > ${expscript}
-    echo set timeout 30 >> ${expscript}
-    echo spawn octopus STDIO ${oamip}:udp:23 >> ${expscript} 
-    echo "send \"\\r\\r\"" >> ${expscript}
-    echo expect \"*ogin:\" >> ${expscript}
-    echo "send \"shell\\r\"" >> ${expscript}
-    echo expect \"*assword:\" >> ${expscript}
-    echo "send \"nt\\r\"" >> ${expscript}
-    echo expect \"]\>\" >> ${expscript}
-    echo "send \"eqpt displayasam -s\\r\"" >> ${expscript}
-    echo expect \"]\>\" >> ${expscript}
-    echo "send \"rcom exec -b $1 -c login kill 0\\r\"" >> ${expscript}
-    echo expect \"]\>\" >> ${expscript}
-    echo "send \"login board $1\\r\"" >> ${expscript}
-    echo expect \"]\>\" >> ${expscript}
-    echo interact >> ${expscript}
-    expect -f ${expscript}
+    export expltboard=$1
+    export expmorecommand='
+        send "rcom exec -b ${expltboard} -c login kill 0\r";
+        expect "]\>";
+        sleep 5;
+        send "login board ${expltboard}\r";
+        expect "]\>";
+        interact;
+    '
+    expect -c "`(_baseexpect && echo $expmorecommand) | envsubst`"
 }
 
 function setboard() {
     echo before update...
     echoboard
     echoglob
-    
+
     export board=$1
     export globcore=`grep FPGA_ARCH_${board} ${sw}/vobs/dsl/sw/flat/GponGlob/module.mk | awk -F= '{print $2}' | sed 's/^\s*//'`
     export globbin=`grep TARGET_${board} ${sw}/vobs/dsl/sw/flat/GponGlob/module.mk | awk -F= '{print $2}' | sed 's/^\s*//' | sed 's/\$.*/\-METH\.bin/'`
@@ -183,13 +157,13 @@ function setboard() {
     echo after update...
     echoboard
     echoglob
-    
+
     echo update done
 }
 
 function showchangesets() {
     pushd $sw
-    echo sw changeset: 
+    echo sw changeset:
     hg log -r $1
 
     echo glob changeset in sw:
@@ -197,7 +171,7 @@ function showchangesets() {
 
     revision=`hg cat $globcfg -r $1 | grep ^REVISION | awk -F= '{print $2}'`
     popd
-    
+
     echo glob changeset:
     hg log -r ${revision} --repository ${glob}
 
@@ -211,23 +185,23 @@ function showchangesets() {
 function swmake() {
     pushdinalias cdbuild
     nohup docker-make IVY=ivy BUILDROOT_CACHE_ENABLE=1 $@ VERS=${bldversion} -j24 >${swbuildlog} 2>&1 &
-    popd 
+    popd
 
-    buildlog --pid=$! 
+    buildlog --pid=$!
 }
 
 function globmake() {
-    pushdinalias cdglobbld 
+    pushdinalias cdglobbld
     make $@
     popd
 }
 
 function hgupdateglob() {
     swglobcfg=${sw}/$globcfg
-    
+
     echo before update...
-    cat ${swglobcfg} 
-    
+    cat ${swglobcfg}
+
     echo "[GponGlob/glob]" > ${swglobcfg}
     echo "REPO=glob" >> ${swglobcfg}
     echo `hg parents --template "REVISION={node}" --repository ${glob}` >> ${swglobcfg}
@@ -239,20 +213,6 @@ function hgupdateglob() {
 
     echo sw/GponGlob/glob removed if exists
     rm -rf ${sw}/src/GponGlob/glob
-}
-
-function recordbb() {
-    sed -i "1s/[0-9]\+/${bldversion}/g" ${bbhistory}
-
-    echo -e "\n---------------------------------------\n" >> ${bbhistory}
-    echo "bldversion:" ${bldversion} >> ${bbhistory}
-    echo "sw changeset:" >> ${bbhistory}
-    hg parents --repository ${sw} >> ${bbhistory}
-    echo "changes:" >> ${bbhistory}
-    hg diff -b --repository ${sw} >> ${bbhistory}
-    echo -e "\n---------------------------------------\n" >> ${bbhistory}
-
-    versionupdate
 }
 
 function ctagsrepository() {
@@ -309,6 +269,22 @@ function globprepush() {
 function bmtrepository() {
     hg update --repository=$sw bmt_sw6203_typeb
     hg update --repository=$glob bmt_glob6203_typeb
+}
+
+function updateltblackbuild() {
+    pushdinalias cdbuild
+
+    expect -c "
+        set timeout 120;
+        spawn tftp $oamip;
+        expect \">\" { send \"b\r\" }
+        expect \">\" { send \"put images/${1:0:-3}${bldversion} /ONT/Sw/$1\r\" }
+        expect \">\" { send \"q\r\" }
+        expect eof
+    "
+    popd
+
+    ltoam $2
 }
 
 # libs needed for FWLT-C
