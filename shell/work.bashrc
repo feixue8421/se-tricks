@@ -5,11 +5,7 @@ if [ -f /etc/bashrc ]; then
 	. /etc/bashrc
 fi
 
-# Uncomment the following line if you don't like systemctl's auto-paging feature:
-# export SYSTEMD_PAGER=
-
 # project relates exports
-export bbhistory=~/sw.bb.history
 export glob=/repo/yongwu/glob
 export globcore=brugal/fwlt-c
 export globbin=uglob
@@ -19,7 +15,6 @@ export swbuildlog=~/board.make.log
 export globcfg=vobs/dsl/sw/flat/BUILDCFG/extRepo/GponGlob_glob.cfg
 export buildserver=yongwu@172.24.213.197
 export bldversion=017
-
 
 # User specific aliases and functions
 alias ll='ls -lh'
@@ -39,10 +34,8 @@ alias topmyself='top -c -u `whoami`'
 alias oamipbmt='export oamip=135.251.192.162' #'135.251.214.211'
 alias oamiplab='export oamip=10.9.69.237'
 
-
 alias sshbuildserver='ssh ${buildserver}'
 alias buildlog='tail -f ${swbuildlog}'
-alias tftpoam='tftp ${oamip}'
 alias cdsw='cd ${sw}'
 alias cdbuild='cd ${sw}/build/${board}/OS'
 alias cdglob='cd $glob'
@@ -65,84 +58,83 @@ function pushdinalias() {
     eval pushd `alias $1 | awk -F= '{print $2}' | awk '{print $2}' | sed "s/'$//"`
 }
 
-function _baseexpect() {
-    echo '
-        set timeout 30;
-        spawn octopus STDIO ${oamip}:udp:23;
-        send "\r\r";
-        expect "*ogin:";
-        send "shell\r";
-        expect "*assword:";
-        send "nt\r";
-        expect "]\>";
-        send "eqpt displayasam -s\r";
-        expect "]\>";
-    '
+export expectnt='
+    set timeout 30;
+    spawn octopus STDIO ${oamip}:udp:23;
+    send "\r\r";
+    expect "*ogin:";
+    send "shell\r";
+    expect "*assword:";
+    send "nt\r";
+    expect "]\>";
+    send "eqpt displayasam -s\r";
+    expect "]\>";
+'
+
+function expexecute() {
+    expect -c "`(echo $1 && echo $2 && echo $3) | envsubst`"
 }
 
-# usage: sshexpect <user> <ip> <password> <port>
+alias expectexecute='expexecute "$expprefix" "$expcommand" "$exppostfix"'
+
+# usage: sshexpect <user> <ip> <password> <port> <command>
 function sshexpect() {
-    _port="22"
-    [ -z "$4" ] || _port=$4
-
-    expect -c "
-        set timeout 30
-        spawn ssh -oPort=${_port} -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null $1@$2
-        send \"\r\r\"
-        expect \"*assword:\"
-        send \"$3\r\"
-        interact
+    expprefix="
+        set timeout 15;
+        spawn ssh -oPort=${4:-22} -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null $1@$2;
+        send \"\r\r\";
+        expect \"*assword:\";
+        send \"$3\r\";
     "
+    expcommand=""
+    exppostfix="${5:-interact;}"
+    expectexecute
 }
 
+# usage: ltshell <lt> <port> <command>
 function ltshell() {
-    export expltip=127.0.17.$((16#${1:2:2}))
-    port="5022"
-    [ -z "$2" ] || port=$2
-    export expport=$port
+    ltip=127.0.17.$((16#${1:2:2}))
+    port=${2:-5022}
 
-    export expmorecommand='
-        send "natp del_tcp ${expport}\r"
-        expect "]\>"
-        send "natp add_tcp ${expport} ${expltip} 22\r"
-        expect "]\>"
-        exit
-    '
-    expect -c "`(_baseexpect && echo $expmorecommand) | envsubst`"
+    expprefix=$expectnt
+    expcommand="
+        send \"natp del_tcp ${port}\r\";
+        expect \"]\>\";
+        send \"natp add_tcp ${port} ${ltip} 22\r\";
+        expect \"]\>\";
+    "
+    exppostfix='exit;'
+    expectexecute
 
     sleep 5
-    echo " "
-    echo "connect to lt $1 with $port"
-
-    sshexpect root $oamip 2x2=4 $port
+    echo " " && echo "connect to lt $1 with $port"
+    sshexpect root $oamip 2x2=4 $port "$3"
 }
 
 function clioam() {
     # another way to login is using "telnet ${oamip}"
-    expect -c "
-        set timeout 30
-        spawn ssh -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null -l isadmin ${oamip}
-        expect \"*assword:\"
-        send \"      \r\"
-        interact
-    "
+    IFSBAK=$IFS
+    IFS=$(echo -en "\n\b")
+    sshexpect isadmin $oamip "${1:-      }"
+    IFS=$IFSBAK
 }
 
 function ntoam() {
-    expect -c "`(_baseexpect && echo 'interact;') | envsubst`"
+    expprefix=$expectnt && expcommand='' && exppostfix='interact;' && expectexecute
 }
 
+# usage: ltoam <lt> <command>
 function ltoam() {
-    export expltboard=$1
-    export expmorecommand='
-        send "rcom exec -b ${expltboard} -c login kill 0\r";
-        expect "]\>";
+    expprefix=$expectnt
+    expcommand="
+        send \"rcom exec -b $1 -c login kill 0\r\";
+        expect \"]\>\";
         sleep 5;
-        send "login board ${expltboard}\r";
-        expect "]\>";
-        interact;
-    '
-    expect -c "`(_baseexpect && echo $expmorecommand) | envsubst`"
+        send \"login board $1\r\";
+        expect \"]\>\";
+    "
+    exppostfix="${2:-interact;}"
+    expectexecute
 }
 
 function setboard() {
@@ -202,11 +194,8 @@ function hgupdateglob() {
     echo before update...
     cat ${swglobcfg}
 
-    echo "[GponGlob/glob]" > ${swglobcfg}
-    echo "REPO=glob" >> ${swglobcfg}
-    echo `hg parents --template "REVISION={node}" --repository ${glob}` >> ${swglobcfg}
-    echo "SUBDIR=glob" >> ${swglobcfg}
-    echo "HG_SERVER=/repo/yongwu" >> ${swglobcfg}
+    newversion=`hg parents --template "{node}" --repository ${glob}`
+    sed -i "s/[0-9a-f]\{40\}/$newversion/g;/HG_SERVER/d;\$a HG_SERVER=/repo/yongwu" ${swglobcfg}
 
     echo after update...
     cat ${swglobcfg}
@@ -219,9 +208,7 @@ function ctagsrepository() {
     revision=`hg parents --template "{node}" --repository $1`
     revisiontag=~/.ctags/$2.${revision}.ctags
     targettag=$2.ctags
-    if [ ! -f $revisiontag ]; then
-        ctags -f - --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++ -R $1 > $revisiontag
-    fi
+    [ ! -f $revisiontag ] && ctags -f - --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++ -R $1 > $revisiontag
 
     pushd ~
     ln -s -f $revisiontag $targettag
@@ -248,11 +235,7 @@ function synchronizebuildserver() {
 }
 
 function where() {
-    if [ "yongwu" = `whoami` ]; then
-        echo ON BUILDSERVER
-    else
-        echo ON LOCAL
-    fi
+    [ "yongwu" = `whoami` ] && echo ON BUILDSERVER || echo ON LOCAL
 }
 
 function globprepush() {
@@ -272,19 +255,29 @@ function bmtrepository() {
 }
 
 function updateltblackbuild() {
-    pushdinalias cdbuild
+    while echo "==================updateltblackbuild start=================="
+    do
+        swmake
+        tail -n 1 $swbuildlog | grep rror && break
+        echo "==================SW make successfully=================="
 
-    expect -c "
-        set timeout 120;
-        spawn tftp $oamip;
-        expect \">\" { send \"b\r\" }
-        expect \">\" { send \"put images/${1:0:-3}${bldversion} /ONT/Sw/$1\r\" }
-        expect \">\" { send \"q\r\" }
-        expect eof
-    "
-    popd
+        pushdinalias cdbuild
+        expect -c "
+            set timeout 120;
+            spawn tftp $oamip;
+            expect \">\" { send \"b\r\" }
+            expect \">\" { send \"put images/${1:0:-3}${bldversion} /ONT/Sw/$1\r\" }
+            expect \">\" { send \"q\r\" }
+            expect eof
+        " | grep rror && popd && break
+        popd
+        echo "==================Update Binarry successfully=================="
 
-    ltoam $2
+        ltoam $2 'send "err poweron\r";sleep 5;exit;'
+        echo "==================Reboot initialized=================="
+        break
+    done
+    echo "==================updateltblackbuild done=================="
 }
 
 # libs needed for FWLT-C
