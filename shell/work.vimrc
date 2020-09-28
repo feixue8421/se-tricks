@@ -159,8 +159,9 @@ map <F3> <Esc>,x:% !grep -rn . --include=\*.{c,cc,cpp,h,hh,hpp} -i -e
 map <F4> yiw<F3><C-R>"<cr>:w<cr>
 map <F5> :!make<CR>
 map <F6> [I:let nr = input("choose: ")<Bar>exe "normal " . nr ."[\t"<CR>
+map <F7> :silent !pwdctags >/dev/null 2>&1<CR>
 
-set tags=~/glob.ctags
+set tags=auto.generated.ctags
 
 " netrw
 let g:netrw_banner = 0

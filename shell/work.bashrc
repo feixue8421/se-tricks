@@ -15,6 +15,7 @@ export swbuildlog=~/board.make.log
 export globcfg=vobs/dsl/sw/flat/BUILDCFG/extRepo/GponGlob_glob.cfg
 export buildserver=yongwu@172.24.213.197
 export bldversion=017
+export autoctags=auto.generated.ctags
 
 # User specific aliases and functions
 alias ll='ls -lh'
@@ -31,7 +32,7 @@ alias echoboard='echo sw:${sw} board:${board} bldversion:${bldversion}'
 alias echooamip='echo oamip:${oamip}'
 alias shrefresh='source ~/.bashrc'
 alias topmyself='top -c -u `whoami`'
-alias oamipbmt='export oamip=135.251.192.162' #'135.251.214.211'
+alias oamipbmt='export oamip=10.9.74.73' #135.251.192.162 135.251.214.211
 alias oamiplab='export oamip=10.9.69.237'
 
 alias sshbuildserver='ssh ${buildserver}'
@@ -40,9 +41,7 @@ alias cdsw='cd ${sw}'
 alias cdbuild='cd ${sw}/build/${board}/OS'
 alias cdglob='cd $glob'
 alias cdglobbld='cd ${glob}/build/${globcore}/glob'
-alias ctagsglob='ctagsrepository $glob glob'
-alias ctagssw='ctagsrepository $sw sw'
-alias viglob='ctagsglob && pushd $glob && vi . && popd'
+alias viglob='pushd $glob && pwdctags && vi . && popd'
 alias swlog='hg log -b . --graph --repository=$sw'
 alias globlog='hg log -b . --graph --repository=$glob'
 
@@ -131,7 +130,7 @@ function ltoam() {
         expect \"]\>\";
         sleep 5;
         send \"login board $1\r\";
-        expect \"]\>\";
+        expect \"lt*$1*]\>\" \\n timeout { exit 1 };
     "
     exppostfix="${2:-interact;}"
     expectexecute
@@ -195,24 +194,13 @@ function hgupdateglob() {
     cat ${swglobcfg}
 
     newversion=`hg parents --template "{node}" --repository ${glob}`
-    sed -i "s/[0-9a-f]\{40\}/$newversion/g;/HG_SERVER/d;\$a HG_SERVER=/repo/yongwu" ${swglobcfg}
+    sed -i "s/[0-9a-f]\{40\}/$newversion/g;/HG_SERVER/d;/REPO=/a HG_SERVER=/repo/yongwu" ${swglobcfg}
 
     echo after update...
     cat ${swglobcfg}
 
     echo sw/GponGlob/glob removed if exists
     rm -rf ${sw}/src/GponGlob/glob
-}
-
-function ctagsrepository() {
-    revision=`hg parents --template "{node}" --repository $1`
-    revisiontag=~/.ctags/$2.${revision}.ctags
-    targettag=$2.ctags
-    [ ! -f $revisiontag ] && ctags -f - --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++ -R $1 > $revisiontag
-
-    pushd ~
-    ln -s -f $revisiontag $targettag
-    popd
 }
 
 function updaterepository() {
@@ -250,20 +238,20 @@ function globprepush() {
 }
 
 function bmtrepository() {
-    hg update --repository=$sw bmt_sw6203_typeb
-    hg update --repository=$glob bmt_glob6203_typeb
+    hg update --repository=$sw bmt_isr64_typeb
+    hg update --repository=$glob bmt_isr64_glob_typeb
 }
 
 function updateltblackbuild() {
-    while echo "==================updateltblackbuild start=================="
+    while echo "\n==================updateltblackbuild start==================\n"
     do
-        swmake
+        [ -z "$3" ] && swmake
         tail -n 1 $swbuildlog | grep rror && break
-        echo "==================SW make successfully=================="
+        echo "\n==================SW make successfully==================\n"
 
         pushdinalias cdbuild
         expect -c "
-            set timeout 120;
+            set timeout 300;
             spawn tftp $oamip;
             expect \">\" { send \"b\r\" }
             expect \">\" { send \"put images/${1:0:-3}${bldversion} /ONT/Sw/$1\r\" }
@@ -271,13 +259,27 @@ function updateltblackbuild() {
             expect eof
         " | grep rror && popd && break
         popd
-        echo "==================Update Binarry successfully=================="
+        echo "\n==================Update Binarry successfully==================\n"
 
-        ltoam $2 'send "err poweron\r";sleep 5;exit;'
-        echo "==================Reboot initialized=================="
+        ltoam $2 'send "err poweron\r";sleep 5;exit;' || break
+        echo "\n==================Reboot initialized==================\n"
         break
     done
-    echo "==================updateltblackbuild done=================="
+    echo "\n==================updateltblackbuild done==================\n"
+}
+
+function pwdctags() {
+    ctagfile="`pwd | md5sum | cut -c1-12`_`hg parent --template '{short(node)}' 2>/dev/null || echo norepository`.ctags"
+    ctagfolder=~/.ctags
+    ctagfile=$ctagfolder/$ctagfile
+    [ -f $ctagfile ] || ctags -f - --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++ -R "`pwd`" > $ctagfile
+
+    touch $ctagfile
+    ln -s -f $ctagfile $autoctags
+
+    pushd $ctagfolder
+    ls -t1 | sed '1,5d' | xargs -r -L 1 rm
+    popd
 }
 
 # libs needed for FWLT-C
