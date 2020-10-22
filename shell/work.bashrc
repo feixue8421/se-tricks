@@ -29,10 +29,11 @@ alias lgrep='ll | grep'
 alias pwdgrep='grep -rn . -e'
 alias echoglob='echo glob:${glob} globcore:${globcore} globbin:${globbin}'
 alias echoboard='echo sw:${sw} board:${board} bldversion:${bldversion}'
+alias echoboardsw='cat ~/board.sw | sed -n "/DESCRIPTION.*${board^^}/,/END/p"'
 alias echooamip='echo oamip:${oamip}'
 alias shrefresh='source ~/.bashrc'
 alias topmyself='top -c -u `whoami`'
-alias oamipbmt='export oamip=10.9.74.73' #135.251.192.162 135.251.214.211
+alias oamipbmt='export oamip=135.251.214.105' #135.251.192.162 135.251.214.211
 alias oamiplab='export oamip=10.9.69.237'
 
 alias sshbuildserver='ssh ${buildserver}'
@@ -280,6 +281,30 @@ function pwdctags() {
     pushd $ctagfolder
     ls -t1 | sed '1,5d' | xargs -r -L 1 rm
     popd
+}
+
+#usage: generateontcfg 1/1/7/1 10 100 2
+#       generateontcfg 1/1/7/1 10 100 2 ng2:1/1
+function generateontcfg() {
+    chpair=$1
+    ont=${5:-$chpair}
+    vlan=$3
+    for ((idx=$2;idx<$2+$4;idx++))
+    do
+        cat <<-ECHOEOF
+configure equipment ont interface ${ont}/$idx ${5:+pref-channel-pair $chpair} sernum ALCL:ABCD00$idx sw-ver-pland disabled
+configure equipment ont interface ${ont}/$idx admin-state up
+configure equipment ont slot ${ont}/$idx/1 planned-card-type ethernet plndnumdataports 4 plndnumvoiceports 0
+configure equipment ont slot ${ont}/$idx/1 admin-state up
+configure interface port uni:${ont}/$idx/1/1 admin-up
+configure qos interface ${5:+uni:}${ont}/$idx/1/1 upstream-queue 0 bandwidth-profile name:1G bandwidth-sharing uni-sharing
+configure bridge port ${ont}/$idx/1/1 max-unicast-mac 128
+configure vlan id $vlan mode residential-bridge in-qos-prof-name name:Default_TC0
+configure bridge port ${ont}/$idx/1/1 vlan-id $vlan tag single-tagged
+ECHOEOF
+
+    vlan=$(($vlan+1))
+done
 }
 
 # libs needed for FWLT-C
