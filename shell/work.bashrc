@@ -45,8 +45,11 @@ alias cdglobbld='cd ${glob}/build/${globcore}/glob'
 alias viglob='pushd $glob && pwdctags && vi . && popd'
 alias swlog='hg log -b . --graph --repository=$sw'
 alias globlog='hg log -b . --graph --repository=$glob'
-
+alias synclog='rsync -rci --delete-after $buildserver:/users/yongwu* ~/logs/'
 alias globmakelinux='globmake E=LINUX'
+alias expectexecute='expexecute "$expprefix" "$expcommand" "$exppostfix"'
+alias ntcraft='fxcraft 2001 01'
+alias ltgici='fxcraft 4002 02'
 
 PATH=$PATH:$HOME/.local/bin:$HOME/bin:/ap/local/Linux_x86_64/shell
 
@@ -70,12 +73,9 @@ export expectnt='
     send "eqpt displayasam -s\r";
     expect "]\>";
 '
-
 function expexecute() {
     expect -c "`(echo $1 && echo $2 && echo $3) | envsubst`"
 }
-
-alias expectexecute='expexecute "$expprefix" "$expcommand" "$exppostfix"'
 
 # usage: sshexpect <user> <ip> <password> <port> <command>
 function sshexpect() {
@@ -121,6 +121,21 @@ function clioam() {
 
 function ntoam() {
     expprefix=$expectnt && expcommand='' && exppostfix='interact;' && expectexecute
+}
+
+# usage: fxcraft <sshport> <piport>
+function fxcraft() {
+    piip=135.251.192.71
+    portrestart="
+        expect \"*pi@raspberry*\";
+        send \"./kill${2}.sh\r\";
+        expect \"*pi@raspberry*\";
+        send \"./ps${2}.sh\r\";
+        expect \"*pi@raspberry*\";
+        exit;
+    "
+    sshexpect pi $piip '1qaz!QAZ' 22 "${portrestart}"
+    telnet $piip $1
 }
 
 # usage: ltoam <lt> <command>
