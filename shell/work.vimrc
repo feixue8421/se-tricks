@@ -157,9 +157,11 @@ map <leader>q <Esc>:qa!<cr>
 map <leader><cr> :
 map <F3> <Esc>,x:% !grep -rn . --include=\*.{c,cc,cpp,h,hh,hpp} -i -e
 map <F4> yiw<F3><C-R>"<cr>:w<cr>
-map <F5> :!make<CR>
+map <F5> :silent !make<CR>
 map <F6> [I:let nr = input("choose: ")<Bar>exe "normal " . nr ."[\t"<CR>
 map <F7> :silent !pwdctags >/dev/null 2>&1<CR>
+map <F8> :!grep -rn %:h -i -e
+map <F9> yiw<F8><C-R>"<cr>
 
 set tags=auto.generated.ctags
 

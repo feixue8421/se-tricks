@@ -23,7 +23,7 @@ void notifyCV()
     gCV.notify_all();
 }
 
-static TestRegister regist("threads", [](){
+TEST_BEGIN
     std::thread([](){ waitForCV(); return 0;}).detach();
 
     std::cout << "wait thread to run" << std::endl;
@@ -32,5 +32,5 @@ static TestRegister regist("threads", [](){
 
     std::this_thread::sleep_for(std::chrono::seconds(3));
     std::cout << "finished" << std::endl;
-});
+TEST_END
 

@@ -16,9 +16,9 @@ class AnotherSubClass: public BaseClass
 {
 };
 
-static TestRegister regist("oop", [](){
+TEST_BEGIN
     BaseClass::say("hello");
     SubClass::say("world");
     AnotherSubClass::say("good");
-});
+TEST_END
 

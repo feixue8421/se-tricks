@@ -38,10 +38,10 @@ static int getResult(int data)
 
 #define MICRO_CONFLICT(x, o) std::cout<<x<<o<<std::endl;
 
-static TestRegister regist("macros", [](){
+TEST_BEGIN
     TEST(BREAK_ON_ERROR(getResult(10)), "First: shall not be printed")
     TEST(CONTINUE_ON_ERROR(getResult(-10)), "Second: shall not be printed")
     TEST(BREAK_ON_ERROR(getResult(0)), "Third: shall be printed")
     MICRO_CONFLICT("hello world!", 10);
-});
+TEST_END
 

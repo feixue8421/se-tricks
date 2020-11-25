@@ -44,7 +44,7 @@ public:
 
 static PairedPonInitializer pairedponinitializer;
 
-static TestRegister regist("functions", [](){
+TEST_BEGIN
     Values& values = getValues();
 
     printdatas(values, "value: ", "");
@@ -61,5 +61,5 @@ static TestRegister regist("functions", [](){
     std::string result(getpairedpons());
     std::cout << getpairedpons();
     std::cout << "in a string:" << result;
-});
+TEST_END
 

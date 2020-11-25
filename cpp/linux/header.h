@@ -39,6 +39,9 @@ public:
     }
 };
 
+#define TEST_BEGIN static TestRegister regist(__FILE__, [](){
+#define TEST_END });
+#define TEST_RUN(X) TestRegister::run(#X ".cpp")
 
 template<class Datas>
 void printdatas(Datas& datas, const std::string& prefix, const std::string& postfix)

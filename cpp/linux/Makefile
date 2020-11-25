@@ -17,7 +17,7 @@ $(TARGET): $(DEPS) $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LIBS)
 
 clean:
-	-rm -f $(OBJS) $(DEPS) $(TARGET)
+	-rm -f $(OBJS) $(DEPS) $(TARGET) 
 
 %.d: %.cpp
 	$(CC) -MM $(CFLAGS) $< | sed 's/\($*\)\.o[ :]*/\1.o $@ : /g' > $@
