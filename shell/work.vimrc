@@ -107,7 +107,7 @@ endfun
 au BufWritePre *.bashrc,*.vimrc,*.txt,*.js,*.py,*.wiki,*.sh,*.coffee,*.h,*.hh,*.hpp,*.c,*.cc,*.cpp :call CleanExtraSpaces()
 
 map <leader>ss :setlocal spell!<cr>
-map <leader>x :e! ~/.vi.buffer<cr>
+map <leader>x :e! ~/.vi.buffer<cr>:w!<cr>
 
 " Don't close window, when deleting a buffer
 command! Bclose call <SID>BufcloseCloseIt()
@@ -160,8 +160,8 @@ map <F4> yiw<F3><C-R>"<cr>:w<cr>
 map <F5> :silent !make<CR>
 map <F6> [I:let nr = input("choose: ")<Bar>exe "normal " . nr ."[\t"<CR>
 map <F7> :silent !pwdctags >/dev/null 2>&1<CR>
-map <F8> :!grep -rn %:h -i -e
-map <F9> yiw<F8><C-R>"<cr>
+map <F8> :silent !grep -rn %:h -i -e
+map <F9> yiw<F8><C-R>" > ~/.vi.buffer 2>/dev/null<cr><Esc>,x
 
 set tags=auto.generated.ctags
 

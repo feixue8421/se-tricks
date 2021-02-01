@@ -61,5 +61,12 @@ TEST_BEGIN
     std::string result(getpairedpons());
     std::cout << getpairedpons();
     std::cout << "in a string:" << result;
+
+    unsigned char high = 64;
+    unsigned short id = 300;
+    for (; high >= 0 && id > 0; high--, id--)
+    {
+        std::cout << (int)high << " --> " << id << std::endl;
+    }
 TEST_END
 

@@ -26,6 +26,7 @@ alias findbyname='find ./ -name'
 alias agrep='alias | grep'
 alias hgrep='history | grep'
 alias lgrep='ll | grep'
+alias fgrep='cat ~/.bashrc | grep "^# usage: " | grep'
 alias pwdgrep='grep -rn . -e'
 alias echoglob='echo glob:${glob} globcore:${globcore} globbin:${globbin}'
 alias echoboard='echo sw:${sw} board:${board} bldversion:${bldversion}'
@@ -42,7 +43,7 @@ alias cdsw='cd ${sw}'
 alias cdbuild='cd ${sw}/build/${board}/OS'
 alias cdglob='cd $glob'
 alias cdglobbld='cd ${glob}/build/${globcore}/glob'
-alias viglob='pushd $glob && pwdctags && vi . && popd'
+alias viglob='pushd $glob && pwdctags && vi OS/gltdMain.cpp && popd'
 alias swlog='hg log -b . --graph --repository=$sw'
 alias globlog='hg log -b . --graph --repository=$glob'
 alias synclog='rsync -rci --delete-after $buildserver:/users/yongwu* ~/logs/'
@@ -111,6 +112,7 @@ function ltshell() {
     sshexpect root $oamip 2x2=4 $port "$3"
 }
 
+# usage: clioam
 function clioam() {
     # another way to login is using "telnet ${oamip}"
     IFSBAK=$IFS
@@ -119,6 +121,7 @@ function clioam() {
     IFS=$IFSBAK
 }
 
+# usage: ntoam
 function ntoam() {
     expprefix=$expectnt && expcommand='' && exppostfix='interact;' && expectexecute
 }
@@ -152,6 +155,7 @@ function ltoam() {
     expectexecute
 }
 
+# usage: setboard <board>
 function setboard() {
     echo before update...
     echoboard
@@ -168,6 +172,7 @@ function setboard() {
     echo update done
 }
 
+# usage: showchangesets <revid>
 function showchangesets() {
     pushd $sw
     echo sw changeset:
@@ -189,6 +194,7 @@ function showchangesets() {
     fi
 }
 
+# usage: swmake <arg>...
 function swmake() {
     pushdinalias cdbuild
     nohup docker-make IVY=ivy BUILDROOT_CACHE_ENABLE=1 $@ VERS=${bldversion} -j24 >${swbuildlog} 2>&1 &
@@ -197,12 +203,14 @@ function swmake() {
     buildlog --pid=$!
 }
 
+# usage: globmake <arg>...
 function globmake() {
     pushdinalias cdglobbld
     make $@
     popd
 }
 
+# usage: hgupdateglob
 function hgupdateglob() {
     swglobcfg=${sw}/$globcfg
 
@@ -210,7 +218,7 @@ function hgupdateglob() {
     cat ${swglobcfg}
 
     newversion=`hg parents --template "{node}" --repository ${glob}`
-    sed -i "s/[0-9a-f]\{40\}/$newversion/g;/HG_SERVER/d;/REPO=/a HG_SERVER=/repo/yongwu" ${swglobcfg}
+    sed -i "s/[0-9a-f]\{40\}/$newversion/g;/HG_SERVER/d;/REPO=/a HG_SERVER=ssh://builder@172.24.213.197//repo/yongwu" ${swglobcfg}
 
     echo after update...
     cat ${swglobcfg}
@@ -219,6 +227,7 @@ function hgupdateglob() {
     rm -rf ${sw}/src/GponGlob/glob
 }
 
+# usage: updaterepository
 function updaterepository() {
     sshbuildserver hg pull --repository=$sw
     sshbuildserver hg pull --repository=$glob
@@ -227,6 +236,7 @@ function updaterepository() {
     hg pull --repository=$glob
 }
 
+# usage: synchronizebuildserver
 function synchronizebuildserver() {
     cmd="rsync -rci --delete-after"
     $cmd $buildserver:~/.bashrc /mnt/c/Repository/se-tricks/shell/work.bashrc
@@ -238,10 +248,12 @@ function synchronizebuildserver() {
     shrefresh
 }
 
+# usage: where
 function where() {
     [ "yongwu" = `whoami` ] && echo ON BUILDSERVER || echo ON LOCAL
 }
 
+# usage: globprepush
 function globprepush() {
     pushdinalias cdglob
     for ((idx=0;idx<10;idx++))
@@ -253,17 +265,19 @@ function globprepush() {
     popd
 }
 
+# usage: bmtrepository
 function bmtrepository() {
     hg update --repository=$sw bmt_isr64_typeb
     hg update --repository=$glob bmt_isr64_glob_typeb
 }
 
+# usage: updateltblackbuild <IMAGE> <LT> [<BUILD>]
 function updateltblackbuild() {
-    while echo "\n==================updateltblackbuild start==================\n"
+    while echo "==================updateltblackbuild start=================="
     do
         [ -z "$3" ] && swmake
         tail -n 1 $swbuildlog | grep rror && break
-        echo "\n==================SW make successfully==================\n"
+        echo "==================SW make successfully=================="
 
         pushdinalias cdbuild
         expect -c "
@@ -275,15 +289,16 @@ function updateltblackbuild() {
             expect eof
         " | grep rror && popd && break
         popd
-        echo "\n==================Update Binarry successfully==================\n"
+        echo "==================Update Binarry successfully=================="
 
         ltoam $2 'send "err poweron\r";sleep 5;exit;' || break
-        echo "\n==================Reboot initialized==================\n"
+        echo "==================Reboot initialized=================="
         break
     done
-    echo "\n==================updateltblackbuild done==================\n"
+    echo "==================updateltblackbuild done=================="
 }
 
+# usage: pwdctags
 function pwdctags() {
     ctagfile="`pwd | md5sum | cut -c1-12`_`hg parent --template '{short(node)}' 2>/dev/null || echo norepository`.ctags"
     ctagfolder=~/.ctags
@@ -298,8 +313,8 @@ function pwdctags() {
     popd
 }
 
-#usage: generateontcfg 1/1/7/1 10 100 2
-#       generateontcfg 1/1/7/1 10 100 2 ng2:1/1
+# usage: generateontcfg 1/1/7/1 10 100 2
+# usage: generateontcfg 1/1/7/1 10 100 2 ng2:1/1
 function generateontcfg() {
     chpair=$1
     ont=${5:-$chpair}
