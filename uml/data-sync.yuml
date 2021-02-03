@@ -1,0 +1,10 @@
+// {type:activity}
+// {direction:topDown}
+// (start)-><a>[kettle empty]->(Fill Kettle)->|b|
+// <a>[kettle full]->|b|->(Boil Kettle)->|c|
+// |b|->(Add Tea Bag)->(Add Milk)->|c|->(Pour Water)
+// (Pour Water)->(end)
+
+(start)DB updated->(GLTD\(sync_read_task\))
+(GLTD\(sync_read_task\))ONU_SYNC_NTF_CODE\|\nPON_SYNC_NTF_CODE->(Mailbox Task\(mbx_task\))
+(Mailbox Task\(mbx_task\))->[test]->(end)
