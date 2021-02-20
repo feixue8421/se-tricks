@@ -1,0 +1,23 @@
+<diagram program="umletino" version="14.4.0-SNAPSHOT"><zoom_level>10</zoom_level><element><id>UMLClass</id><coordinates><x>0</x><y>0</y><w>460</w><h>110</h></coordinates><panel_attributes>&lt;&lt;interface&gt;&gt;
+SyncOnuDataItf
+--
+
+--
+/+read_dynamic_onu_data(pon: Pon, rec: int, dst: unsigned char *): int/
+/+write_dynamic_onu_data(pon: Pon, rec: int, src: unsigned char *): void/
+/+swolo_onu_dynamic_sync_write(pon: Pon, dyn_data: void *, length: uint32): bool/</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>0</x><y>150</y><w>460</w><h>80</h></coordinates><panel_attributes>SyncOnuDataItfGpon
+--
+
+--
+/+read_dynamic_onu_data(pon: Pon, rec: int, dst: unsigned char *): int/
+/+write_dynamic_onu_data(pon: Pon, rec: int, src: unsigned char *): void/</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>510</x><y>150</y><w>460</w><h>80</h></coordinates><panel_attributes>SyncOnuDataItfNGpon
+--
+
+--
+/+read_dynamic_onu_data(pon: Pon, rec: int, dst: unsigned char *): int/
+/+write_dynamic_onu_data(pon: Pon, rec: int, src: unsigned char *): void/</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>510</x><y>0</y><w>460</w><h>80</h></coordinates><panel_attributes>SyncOnuDataItfNone
+--
+
+--
+/+read_dynamic_onu_data(pon: Pon, rec: int, dst: unsigned char *): int/
+/+write_dynamic_onu_data(pon: Pon, rec: int, src: unsigned char *): void/</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>190</x><y>100</y><w>30</w><h>70</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;10;50</additional_attributes></element><element><id>Relation</id><coordinates><x>450</x><y>100</y><w>190</w><h>70</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;170;50</additional_attributes></element><element><id>Relation</id><coordinates><x>450</x><y>50</y><w>80</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;60;10</additional_attributes></element></diagram>

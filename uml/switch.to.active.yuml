@@ -1,0 +1,6 @@
+// {type:activity}
+// {direction:rightToLeft}
+// {generate:true}
+
+(start)switch to active->(Stop POLLTIMER)->(Popup{bg:chartreuse3})
+(Popup)->(Clear REC mapping)->(Validate ONT State)->(Evaluate PONLOS) ->(Enable Interrupts)->(Restart timers \(BER, POLLTIMER\)) ->(Sleep 50 ms \(onts settle a bit\))->(Sleep while SWO ongoing) ->(Enable ALL ONU if PONLOS detected)->(Trigger Audit \(FULL SYNC\)) ->(Trigger AES key exchanges)->(end)

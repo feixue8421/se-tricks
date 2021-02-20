@@ -1,0 +1,6 @@
+// {type:activity}
+// {direction:rightToLeft}
+// {generate:true}
+
+(start)switch to standby->(Delay Light Seen Monitor)->(Prevent BWM updates)->(Disable Interrupts)->(Clear DF timers)
+(Clear DF timers)->(Clear USBR timer)->(Clear RNGINIT timer)->(Cleanup OntMsgState)->(Set SWOLO event)->(end)

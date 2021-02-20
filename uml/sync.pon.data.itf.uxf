@@ -1,0 +1,31 @@
+<diagram program="umletino" version="14.4.0-SNAPSHOT"><zoom_level>10</zoom_level><element><id>UMLClass</id><coordinates><x>1</x><y>10</y><w>460</w><h>110</h></coordinates><panel_attributes>&lt;&lt;interface&gt;&gt;
+SyncPonDataItf
+--
+
+--
+/+read_dynamic_pon_data(pon: Pon, dst: char *): size_t/
+/+write_dynamic_pon_data(pon: Pon, src: unsigned char *): void/
+/+swolo_pon_dynamic_sync_write(pon: Pon, record_ptr: void *, length: uint32): bool/
+group=1</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1</x><y>160</y><w>460</w><h>80</h></coordinates><panel_attributes>SyncPonDataItfGpon
+bg=blue
+--
+
+--
+/+read_dynamic_pon_data(pon: Pon, dst: char *): size_t/
+/+write_dynamic_pon_data(pon: Pon, src: unsigned char *): void/
+group=1</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>511</x><y>160</y><w>460</w><h>80</h></coordinates><panel_attributes>SyncPonDataItfNGpon
+--
+
+--
+/+read_dynamic_pon_data(pon: Pon, dst: char *): size_t/
+/+write_dynamic_pon_data(pon: Pon, src: unsigned char *): void/
+group=1</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>511</x><y>10</y><w>460</w><h>80</h></coordinates><panel_attributes>SyncPonDataItfNone
+--
+
+--
+/+read_dynamic_pon_data(pon: Pon, dst: char *): size_t/
+/+write_dynamic_pon_data(pon: Pon, src: unsigned char *): void/
+group=1</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>191</x><y>110</y><w>30</w><h>70</h></coordinates><panel_attributes>lt=&lt;&lt;-
+group=1</panel_attributes><additional_attributes>10;10;10;50</additional_attributes></element><element><id>Relation</id><coordinates><x>451</x><y>110</y><w>190</w><h>70</h></coordinates><panel_attributes>lt=&lt;&lt;-
+group=1</panel_attributes><additional_attributes>10;10;170;50</additional_attributes></element><element><id>Relation</id><coordinates><x>451</x><y>60</y><w>80</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;-
+group=1</panel_attributes><additional_attributes>10;10;60;10</additional_attributes></element></diagram>

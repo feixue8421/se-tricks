@@ -1,0 +1,37 @@
+<diagram program="umletino" version="14.4.0-SNAPSHOT"><zoom_level>10</zoom_level><element><id>UMLClass</id><coordinates><x>0</x><y>10</y><w>460</w><h>130</h></coordinates><panel_attributes>&lt;&lt;interface&gt;&gt;
+SyncProtocolItf
+--
+
+--
+/+handle_onu_sync_read(pon: Pon pon, rec: uint8): void/
+/+handle_onu_sync_write(pon: Pon, syncdata: unsigned char *): void/
+/+handle_pon_sync_read(pon: Pon): void/
+/+handle_pon_sync_write(pon: Pon, syncdata: unsigned char *): void/
+group=1</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>450</x><y>60</y><w>80</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;-
+group=1</panel_attributes><additional_attributes>10;10;60;10</additional_attributes></element><element><id>Relation</id><coordinates><x>450</x><y>110</y><w>190</w><h>80</h></coordinates><panel_attributes>lt=&lt;&lt;-
+group=1</panel_attributes><additional_attributes>10;10;170;60</additional_attributes></element><element><id>Relation</id><coordinates><x>190</x><y>130</y><w>30</w><h>60</h></coordinates><panel_attributes>lt=&lt;&lt;-
+group=1</panel_attributes><additional_attributes>10;10;10;40</additional_attributes></element><element><id>UMLClass</id><coordinates><x>0</x><y>170</y><w>460</w><h>110</h></coordinates><panel_attributes>SyncProtocolItfGpon
+--
+
+--
+/+handle_onu_sync_read(pon: Pon pon, rec: uint8): void/
+/+handle_onu_sync_write(pon: Pon, syncdata: unsigned char *): void/
+/+handle_pon_sync_read(pon: Pon): void/
+/+handle_pon_sync_write(pon: Pon, syncdata: unsigned char *): void/
+group=1</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>510</x><y>170</y><w>460</w><h>110</h></coordinates><panel_attributes>SyncProtocolItfNGpon
+--
+
+--
+/+handle_onu_sync_read(pon: Pon pon, rec: uint8): void/
+/+handle_onu_sync_write(pon: Pon, syncdata: unsigned char *): void/
+/+handle_pon_sync_read(pon: Pon): void/
+/+handle_pon_sync_write(pon: Pon, syncdata: unsigned char *): void/
+group=1</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>510</x><y>10</y><w>460</w><h>110</h></coordinates><panel_attributes>SyncProtocolItfNone
+--
+
+--
+/+handle_onu_sync_read(pon: Pon pon, rec: uint8): void/
+/+handle_onu_sync_write(pon: Pon, syncdata: unsigned char *): void/
+/+handle_pon_sync_read(pon: Pon): void/
+/+handle_pon_sync_write(pon: Pon, syncdata: unsigned char *): void/
+group=1</panel_attributes><additional_attributes></additional_attributes></element></diagram>

@@ -37,6 +37,7 @@ alias topmyself='top -c -u `whoami`'
 alias oamipbmt='export oamip=135.251.214.105' #135.251.192.162 135.251.214.211
 alias oamiplab='export oamip=10.9.69.237'
 
+alias httpserver='nohup http-server ${buildserver##*@} 8421 /home/yongwu/httphome/ >/dev/null 2>&1 &'
 alias sshbuildserver='ssh ${buildserver}'
 alias buildlog='tail -f ${swbuildlog}'
 alias cdsw='cd ${sw}'
@@ -218,7 +219,7 @@ function hgupdateglob() {
     cat ${swglobcfg}
 
     newversion=`hg parents --template "{node}" --repository ${glob}`
-    sed -i "s/[0-9a-f]\{40\}/$newversion/g;/HG_SERVER/d;/REPO=/a HG_SERVER=ssh://builder@172.24.213.197//repo/yongwu" ${swglobcfg}
+    sed -i "s/[0-9a-f]\{40\}/$newversion/g;/HG_SERVER/d;/REPO=/a HG_SERVER=ssh://builder@${buildserver##*@}//repo/yongwu" ${swglobcfg}
 
     echo after update...
     cat ${swglobcfg}

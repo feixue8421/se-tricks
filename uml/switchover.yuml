@@ -1,0 +1,9 @@
+// {type:activity}
+// {direction:topDown}
+// {generate:true}
+
+(start)[SyncProtocolItf::swolo_manual_switch_operation]->(Set Inhibit Status\nTRUE)-><a>[PON active]->(Switch to ACTIVE)
+<a>[PON not active]-><b>[PON standby]->(switch to STANDBY)-><c>[do resume dba]->(udba resume)->(Set Inhibit Status\nFALSE)->(end)
+(Switch to ACTIVE)-><c>
+<b>[PON not standby]-><c>
+<c>[no resume]->(Set Inhibit Status\nFALSE)
