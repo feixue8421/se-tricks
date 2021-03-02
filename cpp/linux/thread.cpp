@@ -19,6 +19,7 @@ void waitForCV()
     std::unique_lock<std::mutex> locker(gMutex);
     gCV.wait(locker, pred);
     std::cout << "in waitForCV function" << std::endl;
+    flag = 0;
 }
 
 void notifyCV()
