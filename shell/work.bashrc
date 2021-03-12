@@ -244,7 +244,6 @@ function synchronizebuildserver() {
     $cmd $buildserver:~/.vimrc /mnt/c/Repository/se-tricks/shell/work.vimrc
     $cmd $buildserver:$sw/.hg/localtags $sw/.hg/localtags
     $cmd $buildserver:$glob/.hg/localtags $glob/.hg/localtags
-    $cmd $buildserver:~/cpptaste/ /mnt/c/Repository/se-tricks/cpp/linux/
 
     shrefresh
 }

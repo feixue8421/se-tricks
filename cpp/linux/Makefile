@@ -1,6 +1,11 @@
 SHELL = /bin/bash
 
-CFLAGS = -Wall -g -std=c++11 -pthread
+GPP_VERSION = $(shell g++ -dumpversion)
+ifeq ($(shell expr $(GPP_VERSION) '>=' 10.0), 1)
+$(error g++ version requires 10.0 or newer version, current version: $(GPP_VERSION))
+endif
+
+CFLAGS = -Wall -g -std=c++20 -pthread
 CC = g++
 INCLUDES =
 LIBS = -lm

@@ -68,5 +68,16 @@ TEST_BEGIN
     {
         std::cout << (int)high << " --> " << id << std::endl;
     }
+
+    std::cout << "compare three way: " << ((10 <=> 15) == 0) << std::endl;
+    std::cout << "compare three way: " << ((10 <=> 15) > 0) << std::endl;
+    std::cout << "compare three way: " << ((10 <=> 15) < 0) << std::endl;
+    std::cout << "compare three way: " << ((10 <=> 10) == 0) << std::endl;
+    std::cout << "compare three way: " << ((10 <=> 10) > 0) << std::endl;
+    std::cout << "compare three way: " << ((10 <=> 10) < 0) << std::endl;
+    std::cout << "compare three way: " << ((10 <=> 5) == 0) << std::endl;
+    std::cout << "compare three way: " << ((10 <=> 5) > 0) << std::endl;
+    std::cout << "compare three way: " << ((10 <=> 5) < 0) << std::endl;
+
 TEST_END
 
