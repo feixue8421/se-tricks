@@ -240,8 +240,8 @@ function updaterepository() {
 # usage: synchronizebuildserver
 function synchronizebuildserver() {
     cmd="rsync -rci --delete-after"
-    $cmd $buildserver:~/.bashrc /mnt/c/Repository/se-tricks/shell/work.bashrc
-    $cmd $buildserver:~/.vimrc /mnt/c/Repository/se-tricks/shell/work.vimrc
+    $cmd $buildserver:~/.bashrc ~/se-tricks/shell/work.bashrc
+    $cmd $buildserver:~/.vimrc ~/se-tricks/shell/work.vimrc
     $cmd $buildserver:$sw/.hg/localtags $sw/.hg/localtags
     $cmd $buildserver:$glob/.hg/localtags $glob/.hg/localtags
 
