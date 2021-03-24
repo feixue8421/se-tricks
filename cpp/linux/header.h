@@ -30,11 +30,7 @@ public:
         }
         else
         {
-            std::for_each(tests.begin(), tests.end(), [](const typename Tests::value_type& test) {
-                    std::cout << "***********" << test.first << "***********" << std::endl;
-                    test.second();
-                    std::cout << "***********" << test.first << "***********" << std::endl;
-                    });
+            std::cout << "**********no test specified**********" << std::endl;
         }
     }
 };

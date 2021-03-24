@@ -2,7 +2,7 @@
 
 int main(int argc, char* argv[])
 {
-    TestRegister::run("macros");
+    TEST_RUN(macro);
     return 0;
 }
 
