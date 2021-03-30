@@ -14,7 +14,6 @@ export board=fwlt-c
 export swbuildlog=~/board.make.log
 export globcfg=vobs/dsl/sw/flat/BUILDCFG/extRepo/GponGlob_glob.cfg
 export buildserver=yongwu@172.24.213.197
-export bldversion=017
 export autoctags=auto.generated.ctags
 
 # User specific aliases and functions
@@ -337,8 +336,39 @@ ECHOEOF
 done
 }
 
+export bbhistory=~/sw.bb.history
+
+function bldversionupdate() {
+    if [ ! -f $bbhistory ]; then
+        echo latest=017 > $bbhistory
+    fi
+    export bldversion=`head -n 1 ${bbhistory} | awk -F= '{printf "%03d", ++$2 % 1000}'`
+
+    if [ `grep -cxe '--*' $bbhistory` -gt 10 ]; then
+        grep -nxe '--*' $bbhistory | head -n2 | cut -d: -f1 | paste -s | awk '{print $1 - 1 "," $2 "d"}' | xargs -I% sed -ie '%' $bbhistory
+    fi
+}
+
+function recordbb() {
+    sed -i "1s/[0-9]\+/${bldversion}/g" ${bbhistory}
+
+    cat <<-CATEOF >> $bbhistory
+
+---------------------------------------
+bldversion: ${bldversion}
+sw changeset: `hg parents --repository ${sw} --template "{node}"`
+changes:
+`hg diff -b --repository ${sw}`
+---------------------------------------
+CATEOF
+
+    bldversionupdate
+}
+
 # libs needed for FWLT-C
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/gpongem/lib/:/home/yongwu/lib/
+
+bldversionupdate
 
 PS1='`pwd` \$'
 
