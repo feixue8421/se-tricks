@@ -18,8 +18,8 @@
 
 from itertools import groupby
 
-register = 0x0070104
-value = 0x0000039f
+register = 0x007010c
+value = 0x114
 
 registers = {
     "ICB_PONFAIL_EVENT_LTOBC" : (0x0070104, ['8ponfail_tx_fail_ltobc:\t0', '7ponfail_light_seen_ltobc:\t0', '6ponfail_send_fail_ltobc:\t0', '5ponfail_kill_laser_ltobc:\t0', '4ponfail_nios_timeout_ltobc:\t0', '3ponfail_los_hold_ltobc:\t0', '2ponfail_los_ltobc:\t0', '1ponfail_los_fe_ltobc:\t0', '0ponfail_los_re_ltobc:\t0']),
@@ -32,11 +32,12 @@ if register not in registers:
             register = name
 
 mask = registers[register][1]
-print(f'register: {register}')
-print(f'offset: 0x{registers[register][0]:x}')
+print(f'register: \t{register}')
+print(f'offset: \t0x{registers[register][0]:x}')
 
-print(f'value: 0x{value:x} = {value:b}')
-value = f'{value:b}'
+print(f'value: \t\t0x{value:x}')
+value = f'{value:0>32b}'
+print(f'binary: \tB{value}')
 print(f'field:')
 for item in mask:
     fields = [''.join(list(g)) for _, g in groupby(item, key = lambda x: x.isdigit())]

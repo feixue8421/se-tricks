@@ -79,17 +79,9 @@ map <leader>ba :bufdo bd<cr>
 map <leader>l :bnext<cr>
 map <leader>h :bprevious<cr>
 
-map <leader>tn :tabnew<cr>
-map <leader>to :tabonly<cr>
-map <leader>tc :tabclose<cr>
-map <leader>tm :tabmove
-map <leader>t<leader> :tabnext
+map <leader>n :tn<cr>
+map <leader>p :tp<cr>
 
-" Let 'tl' toggle between this and the last accessed tab
-let g:lasttab = 1
-nmap <Leader>tl :exe "tabn ".g:lasttab<CR>
-
-au TabLeave * let g:lasttab = tabpagenr()
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
 map 0 ^
@@ -155,7 +147,7 @@ imap <leader>n <Esc>
 map <leader>z zf%
 map <leader>q <Esc>:qa!<cr>
 map <leader><cr> :
-map <F3> <Esc>,x:% !grep -rn . --include=\*.{c,cc,cpp,h,hh,hpp} -i -e
+map <F3> <Esc>,x:% !grep -rn . --include=\*.{c,cc,cpp,h,hh,hpp} --exclude-dir={unit,models} -i -e
 map <F4> yiw<F3><C-R>"<cr>:w<cr>
 map <F5> :silent !make<CR>
 map <F6> [I:let nr = input("choose: ")<Bar>exe "normal " . nr ."[\t"<CR>

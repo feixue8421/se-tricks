@@ -51,6 +51,8 @@ alias globmakelinux='globmake E=LINUX'
 alias expectexecute='expexecute "$expprefix" "$expcommand" "$exppostfix"'
 alias ntcraft='fxcraft 2001 01'
 alias ltgici='fxcraft 4002 02'
+alias scp='scp -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null'
+alias a2assh='sshexpect root 135.251.202.220 2x2=4 923'
 
 PATH=$PATH:$HOME/.local/bin:$HOME/bin:/ap/local/Linux_x86_64/shell
 
@@ -148,7 +150,7 @@ function ltoam() {
         send \"rcom exec -b $1 -c login kill 0\r\";
         expect \"]\>\";
         sleep 5;
-        send \"login board $1\r\";
+        send \"login board $1\r\r\";
         expect \"lt*$1*]\>\" \\n timeout { exit 1 };
     "
     exppostfix="${2:-interact;}"
