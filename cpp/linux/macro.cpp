@@ -20,6 +20,9 @@
         }while(0); \
     }
 
+
+#define COUT(MSG) std::cout<< "file: " << __FILE__ << ", line: " << __LINE__ << ", msg: " << MSG << std::endl
+
 static int getResult(int data)
 {
     if (data > 0)
@@ -43,5 +46,9 @@ TEST_BEGIN
     TEST(CONTINUE_ON_ERROR(getResult(-10)), "Second: shall not be printed")
     TEST(BREAK_ON_ERROR(getResult(0)), "Third: shall be printed")
     MICRO_CONFLICT("hello world!", 10);
+
+    COUT("hello world");
+
+    COUT("hello world");
 TEST_END
 

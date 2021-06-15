@@ -2,7 +2,7 @@
 
 int main(int argc, char* argv[])
 {
-    TEST_RUN(macro);
+    TEST_RUN(oop);
     return 0;
 }
 
