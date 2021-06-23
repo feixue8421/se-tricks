@@ -119,7 +119,7 @@ function clioam() {
     # another way to login is using "telnet ${oamip}"
     IFSBAK=$IFS
     IFS=$(echo -en "\n\b")
-    sshexpect isadmin $oamip "${1:-      }"
+    sshexpect isadmin $oamip "${1:-isamcli!}"
     IFS=$IFSBAK
 }
 
