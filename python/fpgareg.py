@@ -2901,7 +2901,7 @@ class Register:
 
 if __name__ == '__main__':
     print('------------------------------------------------------------------------------')
-    print(f'-process {__file__} done!!!-')
+    print(f'-process {__file__} started!!!-')
     print('------------------------------------------------------------------------------')
 
     from optparse import OptionParser

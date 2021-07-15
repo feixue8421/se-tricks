@@ -38,7 +38,6 @@ set wrap
 set number
 set laststatus=2
 set statusline=\ %F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ %l\ \ Column:\ %c
-set shellcmdflag=-ic
 set tags=auto.generated.ctags
 let g:netrw_banner = 0
 let g:netrw_liststyle = 3
@@ -74,7 +73,6 @@ map <F3> <Esc>,x:% !grep -rn . --include=\*.{c,cc,cpp,h,hh,hpp} --exclude-dir={u
 map <F4> yiw<F3><C-R>"<cr>:w<cr>
 map <F5> :silent !make<CR>
 map <F6> [I:let nr = input("choose: ")<Bar>exe "normal " . nr ."[\t"<CR>
-map <F7> :silent !pwdctags >/dev/null 2>&1<CR>
 map <F8> :silent !grep -rn %:h -i -e
 map <F9> yiw<F8><C-R>" > ~/.vi.buffer 2>/dev/null<cr><Esc>,x
 
